@@ -1,9 +1,11 @@
-/* --- Common elements --- */
+/* -- 'Refresh Interactive Content' link -- */
 	#refreshLink {
 		font-family : arial;
 		float : right;
-		display : block;
-		top : 0;
+		//display : block;
+		position : relative;
+		top : 0px;
+		margin : 0px;
 	}
 /* -- Location column URL decoration -- */
 	td.td-tooltip a {
@@ -92,6 +94,7 @@
 		background : rgba(250, 255, 250, 1.0);
 		max-width : 500px;
 		font-size : 80%;
+		z-index : 100;
 	}
 	div.filterPanel-container fieldset p {
 		color : rgb(0, 0, 153);
@@ -129,23 +132,28 @@
 		margin-top: 7px;
 		margin-left : 10px;
 	}
-/* --- Filter trigger (button) --- */
-	#filterTrigger	{
+/* --- Filter button --- */
+	#filterButton	{
 		position : fixed;
+		border-radius : 0px 0px 7px 7px;
+		border : 2px solid black;
+		border-top-width : 0px;
+		background : rgba(242, 255, 242, 1.0);
+		padding : 5px 15px;
+		color : rgb(0, 0, 153);
+		font-weight: bold;
+		font-family: arial;
+		cursor: pointer;
+		z-index : 10;
+		top : 0px !important;
+	}
+	#filterButton.stateA	{
+		color : rgb(255, 0, 0);
 	}
 /* --- Letter panel (navigation) --- */
-	div.drag-container {
-		position : fixed;
-		left : 0px;
-		top : 25px;
-		width : 50px;
-		height : calc(100% - 50px);
-		border : 0px solid red;
-		border-left : 0px;
-		padding : 0px;
-	}
-	div.drag-container div.navigation-letters {
-		border : 1px solid black;
+	div.navigation-letters {
+		border : 2px solid black;
+		border-left-width : 0px;
 		border-radius : 0px 7px 7px 0px;
 		padding : 0px;
 		display : inline-block;
@@ -155,11 +163,11 @@
 		left : 0px;
 		background : rgba(242, 255, 242, 1.0);
 	}
-	div.drag-container div.navigation-letters table {
+	div.navigation-letters table {
 		font-family : arial;
 		font-size : 100%;
 	}
-	div.drag-container div.navigation-letters table a {
+	div.navigation-letters table a {
 		margin : 5px 0px;
 		text-decoration : none;
 	}
@@ -171,6 +179,12 @@
 		margin-top : 20px;
 		margin-left : 20px;
 		width : calc(100% - 20px);
+		font-size : smaller;
+		border-spacing : 0;
+		border-collapse : collapse;
+	}
+	div.filter-allTables table tr td {
+		padding : 4px;
 	}
 	div.filter-allTables table tr:first-of-type {
 		outline : thin solid black;
