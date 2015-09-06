@@ -16,6 +16,9 @@ $.fn.scrollEnd = function(callback, timeout) {
 $.fn.getHTML= function() {
 	return $('<a></a>').append(this.clone()).html();
 }
+//---------------------------------------
+// Event handler for Course Title clicks
+//---------------------------------------
 function courseTitleClickHandler() {
 	var thisRow = $(this).parent().parent();
 	var subj = thisRow.data('subj');
@@ -523,6 +526,7 @@ function updateLocationInfo(locMap, mapHTML, foundLocal) {
 		$('<a>')
 		.attr('href','#')
 		.click(function(){
+			$(window).data('locTooltipAnchor',$(this))
 			return false;
 		})
 		.text(locMap.locKey)
@@ -535,14 +539,21 @@ function updateLocationInfo(locMap, mapHTML, foundLocal) {
 			arrow : false,
 			onlyOne: true,
 			trigger: 'click',
+			positionTracker : true,
 			autoClose: true,
 			functionReady: function(origin,tooltip){
 				var toolTipContainer = $(tooltip);
-				if(true) {
+				if(isMobile()) {
 					toolTipContainer
 					.css({
 						'left' : ($(window).width() - toolTipContainer.width())/2,
 						'top' :  ($(window).height() - toolTipContainer.height())/2 + $(window).scrollTop()
+					});
+				}
+				else {
+					toolTipContainer
+					.css({
+						'top' :  $(window).data('locTooltipAnchor').offset().top - toolTipContainer.height() - 10
 					});
 				}
 				toolTipContainer
@@ -563,63 +574,78 @@ function updateLocationInfo(locMap, mapHTML, foundLocal) {
 // Process instructor nameMap to add HTML tooltip to every record associated with this instructor
 //------------------------------------------------------------------------------------------------
 function updateInstructorInfo(nameMap, text, foundLocal) {
+
 	var tdIndexInstructor = nameMap.tdIndexInstructor;
 	var lname = nameMap.lname;
 	var name = nameMap.name;
-	for(var tdIndex=0, tc = nameMap.td.length; tdIndex < tc; tdIndex++) {
-		var td = nameMap.td[tdIndex];
-		if(text.indexOf('No results were found') === -1) {
-			var a = $('<a>')
-			.attr({
-				'href' : 'https://gsw.edu/searchDirectory/employee/search.php?name=' + lname,
-				'target' : '_blank'
+
+	if(text.indexOf('No results were found') > -1) {
+		for(var tdIndex=0, tc = nameMap.td.length; tdIndex < tc; tdIndex++) {
+			nameMap
+			.td[tdIndex]
+			.attr('title','No record found in the directory')
+			.addClass('tooltip')
+			.tooltipster({
+				theme: 'tooltipster-light'
 			});
-			var tipContenet =	$('<div>')
+		}
+		if(localStorage.getItem('sched.param(debug)') !== '0') {
+			console.log('Employee directory has no record for \'' + lname + '\'');
+		}
+	}
+	else {
+		for(var tdIndex=0, tc = nameMap.td.length; tdIndex < tc; tdIndex++) {
+			nameMap
+			.td[tdIndex]
+			.addClass('td-tooltip')
+			.empty();
+		}
+		var tipContenet =
+			$('<div>')
 			.append(text)
 			.append(
 				$('<span>')
-				.html('<br><br>See other employee(s) with last name \'' + a.text(lname)[0].outerHTML + '\'')
+				.html(
+					'<br><br>See other employee(s) with last name starting with \'' +
+					'<a href="https://gsw.edu/searchDirectory/employee/search.php?name=' + lname + '" ' +
+					'target="_blank">' + lname + '</a>\''
+				)
 			);
-			td
-			.empty()
-			.addClass('td-tooltip')
-			.append(
-				$('<a>')
-				.attr('href','#')
-				.click(function(){
-					return false;
-				})
-				.text(name)
-				.addClass('tooltip')
-				.tooltipster({
-					content: tipContenet,
-					trigger: 'click',
-					theme: 'tooltipster-light',
-					arrow: false,
-					interactive: true,
-					functionReady: function(origin,tooltip){
-						var tt = $(tooltip);
-						if(isMobile()) {
-							tt
-							.css({
-								'left' : ($(window).width() - tt.width())/2,
-								'top' :  ($(window).height() - tt.height())/2 + $(window).scrollTop()
-							});
-						}
-						tt.click(function(){
-							$('.tooltip').tooltipster('hide');
+		var a = $('<a>')
+			.attr('href','#')
+			.click(function(){
+				$(window).data('nameTooltipAnchor',$(this))
+				return false;
+			})
+			.text(name)
+			.addClass('tooltip')
+			.tooltipster({
+				content: tipContenet,
+				trigger: 'click',
+				theme: 'tooltipster-light',
+				arrow: false,
+				interactive: true,
+				functionReady: function(origin,tooltip){
+					var toolTipContainer = $(tooltip);
+					if(isMobile()) {
+						toolTipContainer
+						.css({
+							'left' : ($(window).width() - toolTipContainer.width())/2,
+							'top' :  ($(window).height() - toolTipContainer.height())/2 + $(window).scrollTop()
 						});
 					}
-				})
-			);
-		}
-		else {
-			td.attr('title','No record found in the directory');
-			td.addClass('tooltip').tooltipster({theme: 'tooltipster-light'});
-			if(localStorage.getItem('sched.param(debug)') !== '0') {
-				console.log('Employee directory has no record for \'' + lname + '\'');
-			}
-		}
+					else {
+						toolTipContainer
+						.css({
+							'top' :  $(window).data('nameTooltipAnchor').offset().top - toolTipContainer.height() - 10
+						});
+					}
+					toolTipContainer.click(function(){
+						$('.tooltip').tooltipster('hide');
+					});
+				}
+			})
+			.appendTo(nameMap.td);
 	}
 }
 //-------------------------------------------------------------------------------
