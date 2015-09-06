@@ -1,0 +1,257 @@
+/* --- Common elements --- */
+	#refreshLink {
+		font-family : arial;
+		float : right;
+		display : block;
+		top : 0;
+	}
+/* -- Location column URL decoration -- */
+	td.td-tooltip a {
+		cursor : help;
+	}
+/* -- Location tooltip -- */
+	.modal-dialog {
+		position: relative;
+		width: 400px;
+		z-index: 1050;
+		margin: 0px;
+	}
+	.modal-content {
+		position: relative;
+		background-color: #ffffff;
+		border: 1px solid #999999;
+		border: 1px solid rgba(0, 0, 0, 0.2);
+		font-size: 12px;
+		border-radius: 6px;
+		outline: none;
+		-webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
+				box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
+		background-clip: padding-box;
+	}
+	.modal-body {
+		position: relative;
+		padding: 10px;
+	}
+	.modal-body img {
+		padding-bottom : 0px !important;
+	}
+	.modal-body p.infoText {
+		-webkit-margin-before: 0.5em;
+		margin-top : 0.5em;
+		-webkit-margin-after: 0.5em;
+		margin-bottom: 0.5em;
+	}
+/* -- General info -- */
+	div.genInfo-container {
+		margin-top : auto;
+		margin-bottom: auto;
+		margin-left: 20px;
+		font-family : arial;
+		font-size : smaller;
+	}
+	div.genInfo-title {
+		margin: 10px auto;
+	}
+	div.genInfo-title center{
+		padding : 5px;
+		margin : 5px;
+		font-weight : bold;
+		font-size : large;
+	}
+	p.genInfo-fee,
+	p.genInfo-ptrm-title {
+		font-weight : bold;
+	}
+	div.genInfo-notice,
+	div.genInfo-plagiarism {
+		padding : 10px;
+	}
+	div.genInfo-notice,
+	div.genInfo-plagiarism,
+	div.genInfo-title {
+		background: #E9EBF1;
+		border-radius: 5px;
+	}
+	div.genInfo-links {
+		margin : 2em auto;
+	}
+	table.genInfo-ptrm-table th, table.genInfo-ptrm-table td {
+		vertical-align : middle;
+		padding: 5px;
+	}
+	div.genInfo-plagiarism {
+		margin : 1em auto;
+	}
+/* -- Filter panel -- */
+	div.filterPanel-container {
+		border : 1px solid black;
+		border-radius: 7px;
+		padding : 5px;
+		position : fixed;
+		display : inline-block;
+		background : rgba(250, 255, 250, 1.0);
+		max-width : 500px;
+		font-size : 80%;
+	}
+	div.filterPanel-container fieldset p {
+		color : rgb(0, 0, 153);
+		margin : 0px;
+	}
+	div.filterPanel-container fieldset p ul {
+		margin : 5px;
+	}
+	div.filterPanel-container div.filterPanel-dowItem,
+	div.filterPanel-container div.filterPanel-closedSection,
+	div.filterPanel-container div.filterPanel-genInfo {
+		border : 0px solid black;
+		padding-top : 5px;
+		padding-bottom : 5px;
+		display : inline-block;
+	}
+	div.filterPanel-container div.dow-Any {
+		margin-left : 1em;
+	}
+	div.filterPanel-container div.filterPanel-closedSection {
+		margin-left : 1em;
+	}
+	div.filterPanel-container fieldset {
+		display : block;
+		border : 1px solid black;
+		border-radius : 5px;
+	}
+	div.filterPanel-container fieldset.filterPanel-hide {
+		margin-bottom : 5px;
+	}
+	div.filterPanel-container fieldset.filterPanel-dow {
+	}
+	div.filterPanel-container button {
+		float : right;
+		margin-top: 7px;
+		margin-left : 10px;
+	}
+/* --- Filter trigger (button) --- */
+	#filterTrigger	{
+		position : fixed;
+	}
+/* --- Letter panel (navigation) --- */
+	div.drag-container {
+		position : fixed;
+		left : 0px;
+		top : 25px;
+		width : 50px;
+		height : calc(100% - 50px);
+		border : 0px solid red;
+		border-left : 0px;
+		padding : 0px;
+	}
+	div.drag-container div.navigation-letters {
+		border : 1px solid black;
+		border-radius : 0px 7px 7px 0px;
+		padding : 0px;
+		display : inline-block;
+		position : fixed !important;
+		width : 24px;
+		top : 50px;
+		left : 0px;
+		background : rgba(242, 255, 242, 1.0);
+	}
+	div.drag-container div.navigation-letters table {
+		font-family : arial;
+		font-size : 100%;
+	}
+	div.drag-container div.navigation-letters table a {
+		margin : 5px 0px;
+		text-decoration : none;
+	}
+/* --- All class offering tables --- */
+	div.filter-allTables {
+		font-family : arial;
+	}
+	div.filter-allTables table {
+		margin-top : 20px;
+		margin-left : 20px;
+		width : calc(100% - 20px);
+	}
+	div.filter-allTables table tr:first-of-type {
+		outline : thin solid black;
+		vertical-align : middle;
+		text-align : left;
+	}
+	div.filter-allTables table td.desc-container {
+		border : 1px solid black;
+	}
+	div.filter-allTables table td.desc-container div.desc-inner {
+		margin : 1em;
+	}
+	div.filter-allTables table td.desc-container span.desc-span-nonclick {
+		color : blue;
+		cursor : not-allowed;
+	}
+	div.filter-allTables table td.desc-container h3.desc-title {
+		margin : 0px auto;
+	}
+	div.filter-allTables table td.desc-container h3.desc-error {
+		color : red;
+		text-align : center;
+		margin : 0.5em auto;
+	}
+	div.filter-allTables table th.col-status {
+		width : 1%;
+	}
+	div.filter-allTables table th.col-crn {
+		width : 4%;
+	}
+	div.filter-allTables table th.col-subj {
+		width : 5%;
+	}
+	div.filter-allTables table th.col-numb {
+		width : 5%;
+	}
+	div.filter-allTables table th.col-title {
+		width : auto;
+	}
+	div.filter-allTables table th.col-ptrm {
+		width : 4%;
+	}
+	div.filter-allTables table th.col-hours {
+		width : 4%;
+	}
+	div.filter-allTables table th.col-avail {
+		width : 4%;
+	}
+	div.filter-allTables table th.col-total {
+		width : 4%;
+	}
+	div.filter-allTables table th.col-days {
+		width : 4%;
+	}
+	div.filter-allTables table th.col-time {
+		width : 14%;
+	}
+	div.filter-allTables table th.col-location {
+		width : 8%;
+	}
+	div.filter-allTables table th.col-instructor {
+		width : 10%;
+	}
+	div.filter-allTables table th.col-offering {
+		width : 9%;
+	}
+	@media only screen and (max-width : 850px) {
+		div.filter-allTables table th.filter-antimobile,
+		div.filter-allTables table td.filter-antimobile {
+			display : none;
+		}
+	}
+/* -- Body -- */
+	@media only screen and (min-width : 1600px) {
+		body {
+			font-size : large;
+		}
+	}
+
+
+
+
+
+
