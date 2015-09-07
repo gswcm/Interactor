@@ -23,6 +23,13 @@ function filterApplyHandler() {
 	//-- Clean up previous settings for 'filter-hidden' and 'filter-shown' classes
 	$('.filter-hidden').removeClass('filter-hidden');
 	$('.filter-shown').removeClass('filter-shown');
+	//-- Handling selected course levels
+	var levelItems = $('div.filterPanel-container input[data-type="level-pattern"]:not(:checked)');
+	if($('div.filterPanel-container input[data-type="level-any"]').prop('checked') === false) {
+		levelItems.each(function(){
+			$('.filter-level-' + $(this).attr('data-val').substring(0,1)).addClass('filter-hidden')
+		})
+	}
 	//-- Handling dayes-of-the-week
 	var dowItems = $('div.filterPanel-container input[data-type="dow-day"]:checked');
 	var dowSelector = '';
@@ -73,12 +80,12 @@ function filterApplyHandler() {
 //---------------------------------------
 function courseTitleClickHandler() {
 	var thisRow = $(this).parent().parent();
+	var nextRow = thisRow.next();
 	var subj = thisRow.data('subj');
 	var numb = thisRow.data('numb');
 	var anchor = subj + '_' + numb;
-	if(thisRow.next().find('td').length == 1) {
-		thisRow
-		.next()
+	if(nextRow.find('td').length == 1) {
+		nextRow
 		.toggle('fast')
 		.toggleClass(thisRow.attr('class'));
 	}
@@ -863,15 +870,24 @@ function scheduleProcessor(data) {
 					}
 				}
 				//-- Course level, i.e. 1xxx, 2xxx, etc
-				thisRow.addClass('filter-level-' + numb.substring(0,1));
+				if(numb.length > 0) {
+					thisRow.addClass('filter-level-' + numb.substring(0,1));
+				}
 				//-- Closed section
 				if(thisRowCells[tdIndexStatus].innerText.trim() === 'C') {
 					thisRow.addClass('filter-closedSection');
-					nextRowCells.length && nextRowCells[tdIndexSubj].innerText.trim() === '' && nextRow.addClass('filter-closedSection');
 				}
-				//-- Assign course title for lab sessions without CRN
+				//-- Assign course title for lab sessions without CRN and copy 'parent' classes
 				if(nextRowCells.length && nextRowCells[tdIndexSubj].innerText.trim() === '') {
 					nextRowCells[tdIndexTitle].innerText = 'Lab session for \'' + subj + ' ' + numb + '\' (CRN:' + CRN + ')';
+					var thisRowClasses = thisRow.attr('class').split(/\s+/gi);
+					$.each(thisRowClasses, function(index) {
+						var cl = thisRowClasses[index];
+						if(cl.indexOf('filter-dow') > -1) {
+							return true;
+						}
+						nextRow.addClass(cl);
+					})
 				}
 				//-- Process good looking 'subject' entries
 				if(subj.length >= 3) {
