@@ -324,6 +324,8 @@ function getFilterPanel() {
 			$('.filter-all:not(.filter-hidden)').addClass('filter-shown').show();
 			//-- Hide all items that have .filter-hidden class
 			$('.filter-hidden').hide();
+			//-- Hide all letters in letter-bar
+			$('div.navigation-letters').find('table tr:gt(0)').hide();
 			//-- Hide empty tables
 			$('.filter-allTables table').each(function(index){
 				var entriesToHideOrShow = $(this);
@@ -332,6 +334,7 @@ function getFilterPanel() {
 				}
 				else {
 					entriesToHideOrShow.show();
+					$('div.navigation-letters table tr:contains("' + entriesToHideOrShow.prev('a').attr('name') + '")').show();
 				}
 			});
 			//-- Scroll to stored position
@@ -841,6 +844,9 @@ function scheduleProcessor(data) {
 				nameMap[name].td.push(tdName);
 			});
 			localStorage.setItem('sched.tables(' + thisTableHash + ')',thisTable.html());
+			if(localStorage.getItem('sched.param(debug)') !== '0') {
+				console.log('Hash value of \'' + tableLetter + '\'-table has changed');
+			}
 		}
 		else {
 			thisTable.html(localStorage.getItem('sched.tables(' + thisTableHash + ')'));
@@ -948,13 +954,8 @@ function scheduleProcessor(data) {
 			}
 			$prev = $(this);
 		});
-		/*
-		if($(window).data('topRow') !== null) {
-			smoothScrollTo($(window).data('topRow').offset().top);
-		}
-		*/
 	},1000);
-	//$('#filterButton').repeat(1000).toggleClass('stateA').wait(100).toggleClass('stateA');
+	$('#filterButton').repeat(1000).toggleClass('stateA').wait(100).toggleClass('stateA');
 }
 $(window).resize(function(){
 	$('.navigation-letters').css({
