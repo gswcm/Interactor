@@ -99,10 +99,15 @@
 	div.filterPanel-container fieldset p {
 		color : rgb(0, 0, 153);
 		margin : 0px;
+		font-family : arial;
+	}
+	div.filterPanel-container fieldset legend {
+		font-family : arial;
 	}
 	div.filterPanel-container fieldset p ul {
 		margin : 5px;
 	}
+	div.filterPanel-container div.filterPanel-levelItem,
 	div.filterPanel-container div.filterPanel-dowItem,
 	div.filterPanel-container div.filterPanel-closedSection,
 	div.filterPanel-container div.filterPanel-genInfo {
@@ -111,7 +116,8 @@
 		padding-bottom : 5px;
 		display : inline-block;
 	}
-	div.filterPanel-container div.dow-Any {
+	div.filterPanel-container div.dow-Any,
+	div.filterPanel-container div.level-Any {
 		margin-left : 1em;
 	}
 	div.filterPanel-container div.filterPanel-closedSection {
@@ -237,7 +243,7 @@
 		width : 4%;
 	}
 	div.filter-allTables table th.col-days {
-		width : 4%;
+		width : 6%;
 	}
 	div.filter-allTables table th.col-time {
 		width : 14%;

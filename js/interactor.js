@@ -16,6 +16,58 @@ $.fn.scrollEnd = function(callback, timeout) {
 $.fn.getHTML= function() {
 	return $('<a></a>').append(this.clone()).html();
 }
+//--------------------------------------
+// Filter dialog 'Apply' action handler
+//--------------------------------------
+function filterApplyHandler() {
+	//-- Clean up previous settings for 'filter-hidden' and 'filter-shown' classes
+	$('.filter-hidden').removeClass('filter-hidden');
+	$('.filter-shown').removeClass('filter-shown');
+	//-- Handling dayes-of-the-week
+	var dowItems = $('div.filterPanel-container input[data-type="dow-day"]:checked');
+	var dowSelector = '';
+	if($('div.filterPanel-container input[data-type="dow-any"]').prop('checked') === false) {
+		dowItems.each(function(){
+			dowSelector += $(this).attr('data-val') + ' ';
+		});
+		if(dowSelector !== '') {
+			$('.filter-all:not(.filter-genInfo):not(.filter-dow-' + dowSelector.trim().replace(/\s+/g,'-') + ')').addClass('filter-hidden');
+		}
+		else {
+			$('.filter-all:not(.filter-genInfo)').addClass('filter-hidden');
+		}
+	}
+	//-- General info div
+	if($('div.filterPanel-genInfo').find('input')[0].checked) {
+		$('.filter-genInfo').addClass('filter-hidden');
+	}
+	//-- Closed sections
+	if($('div.filterPanel-closedSection').find('input')[0].checked) {
+		$('.filter-closedSection').addClass('filter-hidden');
+	}
+	//-- Show all filtered items that don't have .filter-hidden class
+	$('.filter-all:not(.filter-hidden)').addClass('filter-shown').show();
+	//-- Hide all items that have .filter-hidden class
+	$('.filter-hidden').hide();
+	//-- Hide all letters in letter-bar
+	$('div.navigation-letters').find('table tr:gt(0)').hide();
+	//-- Hide empty tables
+	$('.filter-allTables table').each(function(index){
+		var entriesToHideOrShow = $(this);
+		if($(this).find('tr.filter-shown').length === 0) {
+			entriesToHideOrShow.hide();
+		}
+		else {
+			entriesToHideOrShow.show();
+			$('div.navigation-letters table tr:contains("' + entriesToHideOrShow.prev('a').attr('name') + '")').show();
+		}
+	});
+	//-- Scroll to stored position
+	if($(window).data('topRow') !== null) {
+		smoothScrollTo($(window).data('topRow').offset().top);
+	}
+}
+
 //---------------------------------------
 // Event handler for Course Title clicks
 //---------------------------------------
@@ -241,7 +293,40 @@ function getFilterPanel() {
 				)
 			)
 		)
+		.append(
+			$('<fieldset>')
+			.addClass('filterPanel-level')
+			.append(
+				$('<legend>')
+				.html('<b>Course levels to show</b>')
+			)
+			.append(
+				$('<p>')
+				.html(
+					'Specify combination of course levels, i.e. <b>1xxx</b>, <b>2xxx</b>, etc or <b>Any</b> to show'
+				)
+			)
+		)
 	);
+	var level = "0xxx 1xxx 2xxx 3xxx 4xxx 5xxx 6xxx 7xxx 8xxx Any".split(/\s+/gi);
+	$.each(level,function(index){
+		var levelItem = level[index];
+		filterContent
+		.find('fieldset.filterPanel-level')
+		.append(
+			$('<div>')
+			.addClass('filterPanel-levelItem level-' + levelItem)
+			.append(
+				$('<input type="checkbox">')
+				.attr('data-val',levelItem)
+				.attr('name','level-' + levelItem)
+			)
+			.append(
+				$('<label>')
+				.text(levelItem)
+			)
+		);
+	});
 	var dow = "M T W R F S U O Any".split(/\s+/gi);
 	$.each(dow,function(index){
 		var day = dow[index];
@@ -259,6 +344,7 @@ function getFilterPanel() {
 		);
 	});
 	filterContent
+	//-- Day of the week checkboxes
 	.find('div.dow-Any').each(function(){
 		var input = $(this).find('input');
 		input
@@ -283,6 +369,31 @@ function getFilterPanel() {
 		});
 	})
 	.end()
+	//Course level checkboxes
+	.find('div.level-Any').each(function(){
+		var input = $(this).find('input');
+		input
+		.attr('data-type','level-any')
+		.prop('disabled', false)
+		.prop('checked', true);
+		$(this).click(function(){
+			input[0].checked = !(input[0].checked);
+			$('div.filterPanel-container input[data-type="level-pattern"]').prop('disabled',input[0].checked);
+		});
+	})
+	.end()
+	.find('div.filterPanel-levelItem:not(div.level-Any)').each(function(){
+		var input = $(this).find('input');
+		input
+		.attr('data-type','level-pattern')
+		.prop('disabled',true);
+		$(this).click(function(){
+			if(!$('div.filterPanel-container input[data-type="level-any"]').prop('checked')) {
+				input[0].checked = !(input[0].checked);
+			}
+		});
+	})
+	.end()
 	.append(
 		$('<button>')
 		.text('Close')
@@ -294,54 +405,7 @@ function getFilterPanel() {
 	.append(
 		$('<button>')
 		.text('Apply')
-		.click(function(e){
-			//-- Clean up previous settings for 'filter-hidden' and 'filter-shown' classes
-			$('.filter-hidden').removeClass('filter-hidden');
-			$('.filter-shown').removeClass('filter-shown');
-			//-- Handling dayes-of-the-week
-			var dowItems = $('div.filterPanel-container input[data-type="dow-day"]:checked');
-			var dowSelector = '';
-			if($('div.filterPanel-container input[data-type="dow-any"]').prop('checked') === false) {
-				dowItems.each(function(){
-					dowSelector += $(this).attr('data-val') + ' ';
-				});
-				if(dowSelector !== '') {
-					$('.filter-all:not(.filter-genInfo):not(.filter-dow-' + dowSelector.trim().replace(/\s+/g,'-') + ')').addClass('filter-hidden');
-				}
-				else {
-					$('.filter-all:not(.filter-genInfo)').addClass('filter-hidden');
-				}
-			}
-			//-- General info div
-			if($('div.filterPanel-genInfo').find('input')[0].checked) {
-				$('.filter-genInfo').addClass('filter-hidden');
-			}
-			//-- Closed sections
-			if($('div.filterPanel-closedSection').find('input')[0].checked) {
-				$('.filter-closedSection').addClass('filter-hidden');
-			}
-			//-- Show all filtered items that don't have .filter-hidden class
-			$('.filter-all:not(.filter-hidden)').addClass('filter-shown').show();
-			//-- Hide all items that have .filter-hidden class
-			$('.filter-hidden').hide();
-			//-- Hide all letters in letter-bar
-			$('div.navigation-letters').find('table tr:gt(0)').hide();
-			//-- Hide empty tables
-			$('.filter-allTables table').each(function(index){
-				var entriesToHideOrShow = $(this);
-				if($(this).find('tr.filter-shown').length === 0) {
-					entriesToHideOrShow.hide();
-				}
-				else {
-					entriesToHideOrShow.show();
-					$('div.navigation-letters table tr:contains("' + entriesToHideOrShow.prev('a').attr('name') + '")').show();
-				}
-			});
-			//-- Scroll to stored position
-			if($(window).data('topRow') !== null) {
-				smoothScrollTo($(window).data('topRow').offset().top);
-			}
-		})
+		.click(filterApplyHandler)
 		.button()
 	)
 	.find('input').click(function(e){
@@ -609,7 +673,7 @@ function updateInstructorInfo(nameMap, text, foundLocal) {
 			.append(
 				$('<span>')
 				.html(
-					'<br><br>See other employee(s) with last name starting with \'' +
+					'<br><br>See all employees having last name starting with \'' +
 					'<a href="https://gsw.edu/searchDirectory/employee/search.php?name=' + lname + '" ' +
 					'target="_blank">' + lname + '</a>\''
 				)
@@ -798,6 +862,8 @@ function scheduleProcessor(data) {
 						thisRow.addClass('filter-dow-U');
 					}
 				}
+				//-- Course level, i.e. 1xxx, 2xxx, etc
+				thisRow.addClass('filter-level-' + numb.substring(0,1));
 				//-- Closed section
 				if(thisRowCells[tdIndexStatus].innerText.trim() === 'C') {
 					thisRow.addClass('filter-closedSection');
