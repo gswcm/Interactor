@@ -5,11 +5,11 @@ $term = 'sched201508';
 if(isset($_GET['term']) and $_GET['term'] !== '') {
 	$term = $_GET['term'];
 }
-$debug = '0';
+$debug = '1';
 if(isset($_GET['debug']) and $_GET['debug'] !== '') {
 	$debug = $_GET['debug'];
 }
-$version = '1.0.15';
+$version = '1.0.20';
 if(isset($_GET['ver']) and $_GET['ver'] !== '') {
 	$version = $_GET['ver'];
 }

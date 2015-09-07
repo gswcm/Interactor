@@ -850,11 +850,11 @@ function scheduleProcessor(data) {
 				thisRow
 				.find('td:eq(' + tdIndexPTRM + '),td:eq(' + tdIndexCredHours + '),td:eq(' + tdIndexTotalSeats + '),td:last-of-type')
 				.addClass('filter-antimobile');
-				var days = thisRowCells[tdIndexDays].innerText.trim();
-				var subj = thisRowCells[tdIndexSubj].innerText.trim();
-				var numb = thisRowCells[tdIndexNumb].innerText.trim();
-				var desc = thisRowCells[tdIndexTitle].innerText.trim();
-				var CRN =  thisRowCells[tdIndexCRN].innerText.trim();
+				var days = thisRowCells[tdIndexDays].textContent.trim();
+				var subj = thisRowCells[tdIndexSubj].textContent.trim();
+				var numb = thisRowCells[tdIndexNumb].textContent.trim();
+				var desc = thisRowCells[tdIndexTitle].textContent.trim();
+				var CRN =  thisRowCells[tdIndexCRN].textContent.trim();
 				//-- Conditionally assign classes that will be used for filtering
 				thisRow.addClass('filter-all filter-shown');
 				//-- Day of the week
@@ -874,12 +874,12 @@ function scheduleProcessor(data) {
 					thisRow.addClass('filter-level-' + numb.substring(0,1));
 				}
 				//-- Closed section
-				if(thisRowCells[tdIndexStatus].innerText.trim() === 'C') {
+				if(thisRowCells[tdIndexStatus].textContent.trim() === 'C') {
 					thisRow.addClass('filter-closedSection');
 				}
 				//-- Assign course title for lab sessions without CRN and copy 'parent' classes
-				if(nextRowCells.length && nextRowCells[tdIndexSubj].innerText.trim() === '') {
-					nextRowCells[tdIndexTitle].innerText = 'Lab session for \'' + subj + ' ' + numb + '\' (CRN:' + CRN + ')';
+				if(nextRowCells.length && nextRowCells[tdIndexSubj].textContent.trim() === '') {
+					nextRowCells[tdIndexTitle].textContent = 'Lab session for \'' + subj + ' ' + numb + '\' (CRN:' + CRN + ')';
 					var thisRowClasses = thisRow.attr('class').split(/\s+/gi);
 					$.each(thisRowClasses, function(index) {
 						var cl = thisRowClasses[index];
@@ -959,8 +959,8 @@ function scheduleProcessor(data) {
 				var thisRow = $(this)
 				var thisRowCells = thisRow.find('td');
 				thisRow
-				.data('subj',thisRowCells[tdIndexSubj].innerText.trim())
-				.data('numb',thisRowCells[tdIndexNumb].innerText.trim())
+				.data('subj',thisRowCells[tdIndexSubj].textContent.trim())
+				.data('numb',thisRowCells[tdIndexNumb].textContent.trim())
 				.find('td:eq(' + tdIndexTitle + ') a')
 				.click(courseTitleClickHandler)
 				//-- Location pre-processing

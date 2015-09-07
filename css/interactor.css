@@ -34,6 +34,9 @@
 		position: relative;
 		padding: 10px;
 	}
+	.modal-body li {
+		list-style-type: none;
+	}
 	.modal-body img {
 		padding-bottom : 0px !important;
 	}
@@ -101,7 +104,8 @@
 		margin : 0px;
 		font-family : arial;
 	}
-	div.filterPanel-container fieldset legend {
+	div.filterPanel-container fieldset legend,
+	div.filterPanel-container fieldset label {
 		font-family : arial;
 	}
 	div.filterPanel-container fieldset p ul {
@@ -267,6 +271,18 @@
 	@media only screen and (min-width : 1600px) {
 		body {
 			font-size : large;
+		}
+		div.filterPanel-container {
+			padding : 20px;
+			max-width : 800px;
+		}
+		div.filterPanel-container fieldset.filterPanel-hide,
+		div.filterPanel-container fieldset.filterPanel-dow,
+		div.filterPanel-container fieldset.filterPanel-level {
+			margin-bottom : 15px;
+		}
+		.modal-body {
+			padding: 15px;
 		}
 	}
 
