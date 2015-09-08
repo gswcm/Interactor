@@ -16,14 +16,92 @@ $.fn.scrollEnd = function(callback, timeout) {
 $.fn.getHTML= function() {
 	return $('<a></a>').append(this.clone()).html();
 }
+//--------------------------------------
+// Filter dialog 'Apply' action handler
+//--------------------------------------
+function filterApplyHandler() {
+	//-- Clean up previous settings for 'filter-hidden' and 'filter-shown' classes
+	$('.filter-hidden').removeClass('filter-hidden');
+	$('.filter-shown').removeClass('filter-shown');
+	$('.filter-name-whitelist').removeClass('filter-name-whitelist');
+	//-- Handling selected course levels
+	var levelItems = $('div.filterPanel-container input[data-type="level-pattern"]:not(:checked)');
+	if($('div.filterPanel-container input[data-type="level-any"]').prop('checked') === false) {
+		levelItems.each(function(){
+			$('.filter-level-' + $(this).attr('data-val').substring(0,1)).addClass('filter-hidden')
+		})
+	}
+	//-- Handling dayes-of-the-week
+	var dowItems = $('div.filterPanel-container input[data-type="dow-day"]:checked');
+	var dowSelector = '';
+	if($('div.filterPanel-container input[data-type="dow-any"]').prop('checked') === false) {
+		dowItems.each(function(){
+			dowSelector += $(this).attr('data-val') + ' ';
+		});
+		if(dowSelector !== '') {
+			$('.filter-all:not(.filter-genInfo):not(.filter-dow-' + dowSelector.trim().replace(/\s+/g,'-') + ')').addClass('filter-hidden');
+		}
+		else {
+			$('.filter-all:not(.filter-genInfo)').addClass('filter-hidden');
+		}
+	}
+	//-- Handling 'Name'-filter
+	var instName = $('div.filterPanel-container input[name=name-entry]').val().toLowerCase();
+	if(instName.length > 0) {
+		var nameMap = $('div.filterPanel-container').data('nameMap');
+		for(var name in nameMap) {
+			if(name.toLowerCase().indexOf(instName) > -1) {
+				$(nameMap[name].td).map(function(){
+					return this.toArray()
+				})
+				.parent()
+				.addClass('filter-name-whitelist');
+			}
+		}
+		$('.filter-all:not(.filter-name-whitelist):not(.filter-genInfo)').addClass('filter-hidden');
+	}
+	//-- General info div
+	if($('div.filterPanel-genInfo').find('input')[0].checked) {
+		$('.filter-genInfo').addClass('filter-hidden');
+	}
+	//-- Closed sections
+	if($('div.filterPanel-closedSection').find('input')[0].checked) {
+		$('.filter-closedSection').addClass('filter-hidden');
+	}
+	//-- Show all filtered items that don't have .filter-hidden class
+	$('.filter-all:not(.filter-hidden)').addClass('filter-shown').show();
+	//-- Hide all items that have .filter-hidden class
+	$('.filter-hidden').hide();
+	//-- Hide all letters in letter-bar
+	$('div.navigation-letters').find('table tr:gt(0)').hide();
+	//-- Hide empty tables
+	$('.filter-allTables table').each(function(index){
+		var entriesToHideOrShow = $(this);
+		if($(this).find('tr.filter-shown').length === 0) {
+			entriesToHideOrShow.hide();
+		}
+		else {
+			entriesToHideOrShow.show();
+			$('div.navigation-letters table tr:contains("' + entriesToHideOrShow.prev('a').attr('name') + '")').show();
+		}
+	});
+	//-- Scroll to stored position
+	if($(window).data('topRow') !== null) {
+		smoothScrollTo($(window).data('topRow').offset().top);
+	}
+}
+
+//---------------------------------------
+// Event handler for Course Title clicks
+//---------------------------------------
 function courseTitleClickHandler() {
 	var thisRow = $(this).parent().parent();
+	var nextRow = thisRow.next();
 	var subj = thisRow.data('subj');
 	var numb = thisRow.data('numb');
 	var anchor = subj + '_' + numb;
-	if(thisRow.next().find('td').length == 1) {
-		thisRow
-		.next()
+	if(nextRow.find('td').length == 1) {
+		nextRow
 		.toggle('fast')
 		.toggleClass(thisRow.attr('class'));
 	}
@@ -238,7 +316,34 @@ function getFilterPanel() {
 				)
 			)
 		)
+		.append(
+			$('<fieldset>')
+			.addClass('filterPanel-level')
+			.append(
+				$('<legend>')
+				.html('<b>Course levels to show</b>')
+			)
+		)
 	);
+	var level = "0xxx 1xxx 2xxx 3xxx 4xxx 5xxx 6xxx 7xxx 8xxx Any".split(/\s+/gi);
+	$.each(level,function(index){
+		var levelItem = level[index];
+		filterContent
+		.find('fieldset.filterPanel-level')
+		.append(
+			$('<div>')
+			.addClass('filterPanel-levelItem level-' + levelItem)
+			.append(
+				$('<input type="checkbox">')
+				.attr('data-val',levelItem)
+				.attr('name','level-' + levelItem)
+			)
+			.append(
+				$('<label>')
+				.text(levelItem)
+			)
+		);
+	});
 	var dow = "M T W R F S U O Any".split(/\s+/gi);
 	$.each(dow,function(index){
 		var day = dow[index];
@@ -256,6 +361,7 @@ function getFilterPanel() {
 		);
 	});
 	filterContent
+	//-- Day of the week checkboxes
 	.find('div.dow-Any').each(function(){
 		var input = $(this).find('input');
 		input
@@ -280,6 +386,42 @@ function getFilterPanel() {
 		});
 	})
 	.end()
+	// Course level checkboxes
+	.find('div.level-Any').each(function(){
+		var input = $(this).find('input');
+		input
+		.attr('data-type','level-any')
+		.prop('disabled', false)
+		.prop('checked', true);
+		$(this).click(function(){
+			input[0].checked = !(input[0].checked);
+			$('div.filterPanel-container input[data-type="level-pattern"]').prop('disabled',input[0].checked);
+		});
+	})
+	.end()
+	.find('div.filterPanel-levelItem:not(div.level-Any)').each(function(){
+		var input = $(this).find('input');
+		input
+		.attr('data-type','level-pattern')
+		.prop('disabled',true);
+		$(this).click(function(){
+			if(!$('div.filterPanel-container input[data-type="level-any"]').prop('checked')) {
+				input[0].checked = !(input[0].checked);
+			}
+		});
+	})
+	.end()
+	// Instructor name filter
+	.append(
+		$('<input>')
+		.attr({
+			'type' :  			'text',
+			'name' :  			'name-entry',
+			'title' : 			'Enter a part of or entire last name of instructor(s) to limit list of displayed classes. Exact match can be made ' +
+									'by using combination of the last name along with initial as listed in corresponding table column, e.g. \'Doe, J\'',
+			'placeholder' : 	'Last name of the instructor to filter class records'
+		})
+	)
 	.append(
 		$('<button>')
 		.text('Close')
@@ -291,51 +433,7 @@ function getFilterPanel() {
 	.append(
 		$('<button>')
 		.text('Apply')
-		.click(function(e){
-			//-- Clean up previous settings for 'filter-hidden' and 'filter-shown' classes
-			$('.filter-hidden').removeClass('filter-hidden');
-			$('.filter-shown').removeClass('filter-shown');
-			//-- Handling dayes-of-the-week
-			var dowItems = $('div.filterPanel-container input[data-type="dow-day"]:checked');
-			var dowSelector = '';
-			if($('div.filterPanel-container input[data-type="dow-any"]').prop('checked') === false) {
-				dowItems.each(function(){
-					dowSelector += $(this).attr('data-val') + ' ';
-				});
-				if(dowSelector !== '') {
-					$('.filter-all:not(.filter-genInfo):not(.filter-dow-' + dowSelector.trim().replace(/\s+/g,'-') + ')').addClass('filter-hidden');
-				}
-				else {
-					$('.filter-all:not(.filter-genInfo)').addClass('filter-hidden');
-				}
-			}
-			//-- General info div
-			if($('div.filterPanel-genInfo').find('input')[0].checked) {
-				$('.filter-genInfo').addClass('filter-hidden');
-			}
-			//-- Closed sections
-			if($('div.filterPanel-closedSection').find('input')[0].checked) {
-				$('.filter-closedSection').addClass('filter-hidden');
-			}
-			//-- Show all filtered items that don't have .filter-hidden class
-			$('.filter-all:not(.filter-hidden)').addClass('filter-shown').show();
-			//-- Hide all items that have .filter-hidden class
-			$('.filter-hidden').hide();
-			//-- Hide empty tables
-			$('.filter-allTables table').each(function(index){
-				var entriesToHideOrShow = $(this);
-				if($(this).find('tr.filter-shown').length === 0) {
-					entriesToHideOrShow.hide();
-				}
-				else {
-					entriesToHideOrShow.show();
-				}
-			});
-			//-- Scroll to stored position
-			if($(window).data('topRow') !== null) {
-				smoothScrollTo($(window).data('topRow').offset().top);
-			}
-		})
+		.click(filterApplyHandler)
 		.button()
 	)
 	.find('input').click(function(e){
@@ -523,6 +621,7 @@ function updateLocationInfo(locMap, mapHTML, foundLocal) {
 		$('<a>')
 		.attr('href','#')
 		.click(function(){
+			$(window).data('locTooltipAnchor',$(this))
 			return false;
 		})
 		.text(locMap.locKey)
@@ -535,14 +634,21 @@ function updateLocationInfo(locMap, mapHTML, foundLocal) {
 			arrow : false,
 			onlyOne: true,
 			trigger: 'click',
+			positionTracker : true,
 			autoClose: true,
 			functionReady: function(origin,tooltip){
 				var toolTipContainer = $(tooltip);
-				if(true) {
+				if(isMobile()) {
 					toolTipContainer
 					.css({
 						'left' : ($(window).width() - toolTipContainer.width())/2,
 						'top' :  ($(window).height() - toolTipContainer.height())/2 + $(window).scrollTop()
+					});
+				}
+				else {
+					toolTipContainer
+					.css({
+						'top' :  $(window).data('locTooltipAnchor').offset().top - toolTipContainer.height() - 10
 					});
 				}
 				toolTipContainer
@@ -563,63 +669,78 @@ function updateLocationInfo(locMap, mapHTML, foundLocal) {
 // Process instructor nameMap to add HTML tooltip to every record associated with this instructor
 //------------------------------------------------------------------------------------------------
 function updateInstructorInfo(nameMap, text, foundLocal) {
+
 	var tdIndexInstructor = nameMap.tdIndexInstructor;
 	var lname = nameMap.lname;
 	var name = nameMap.name;
-	for(var tdIndex=0, tc = nameMap.td.length; tdIndex < tc; tdIndex++) {
-		var td = nameMap.td[tdIndex];
-		if(text.indexOf('No results were found') === -1) {
-			var a = $('<a>')
-			.attr({
-				'href' : 'https://gsw.edu/searchDirectory/employee/search.php?name=' + lname,
-				'target' : '_blank'
+
+	if(text.indexOf('No results were found') > -1) {
+		for(var tdIndex=0, tc = nameMap.td.length; tdIndex < tc; tdIndex++) {
+			nameMap
+			.td[tdIndex]
+			.attr('title','No record found in the directory')
+			.addClass('tooltip')
+			.tooltipster({
+				theme: 'tooltipster-light'
 			});
-			var tipContenet =	$('<div>')
+		}
+		if(localStorage.getItem('sched.param(debug)') !== '0') {
+			console.log('Employee directory has no record for \'' + lname + '\'');
+		}
+	}
+	else {
+		for(var tdIndex=0, tc = nameMap.td.length; tdIndex < tc; tdIndex++) {
+			nameMap
+			.td[tdIndex]
+			.addClass('td-tooltip')
+			.empty();
+		}
+		var tipContenet =
+			$('<div>')
 			.append(text)
 			.append(
 				$('<span>')
-				.html('<br><br>See other employee(s) with last name \'' + a.text(lname)[0].outerHTML + '\'')
+				.html(
+					'<br><br>See all employees having last name starting with \'' +
+					'<a href="https://gsw.edu/searchDirectory/employee/search.php?name=' + lname + '" ' +
+					'target="_blank">' + lname + '</a>\''
+				)
 			);
-			td
-			.empty()
-			.addClass('td-tooltip')
-			.append(
-				$('<a>')
-				.attr('href','#')
-				.click(function(){
-					return false;
-				})
-				.text(name)
-				.addClass('tooltip')
-				.tooltipster({
-					content: tipContenet,
-					trigger: 'click',
-					theme: 'tooltipster-light',
-					arrow: false,
-					interactive: true,
-					functionReady: function(origin,tooltip){
-						var tt = $(tooltip);
-						if(isMobile()) {
-							tt
-							.css({
-								'left' : ($(window).width() - tt.width())/2,
-								'top' :  ($(window).height() - tt.height())/2 + $(window).scrollTop()
-							});
-						}
-						tt.click(function(){
-							$('.tooltip').tooltipster('hide');
+		var a = $('<a>')
+			.attr('href','#')
+			.click(function(){
+				$(window).data('nameTooltipAnchor',$(this))
+				return false;
+			})
+			.text(name)
+			.addClass('tooltip')
+			.tooltipster({
+				content: tipContenet,
+				trigger: 'click',
+				theme: 'tooltipster-light',
+				arrow: false,
+				interactive: true,
+				functionReady: function(origin,tooltip){
+					var toolTipContainer = $(tooltip);
+					if(isMobile()) {
+						toolTipContainer
+						.css({
+							'left' : ($(window).width() - toolTipContainer.width())/2,
+							'top' :  ($(window).height() - toolTipContainer.height())/2 + $(window).scrollTop()
 						});
 					}
-				})
-			);
-		}
-		else {
-			td.attr('title','No record found in the directory');
-			td.addClass('tooltip').tooltipster({theme: 'tooltipster-light'});
-			if(localStorage.getItem('sched.param(debug)') !== '0') {
-				console.log('Employee directory has no record for \'' + lname + '\'');
-			}
-		}
+					else {
+						toolTipContainer
+						.css({
+							'top' :  $(window).data('nameTooltipAnchor').offset().top - toolTipContainer.height() - 10
+						});
+					}
+					toolTipContainer.click(function(){
+						$('.tooltip').tooltipster('hide');
+					});
+				}
+			})
+			.appendTo(nameMap.td);
 	}
 }
 //-------------------------------------------------------------------------------
@@ -750,11 +871,11 @@ function scheduleProcessor(data) {
 				thisRow
 				.find('td:eq(' + tdIndexPTRM + '),td:eq(' + tdIndexCredHours + '),td:eq(' + tdIndexTotalSeats + '),td:last-of-type')
 				.addClass('filter-antimobile');
-				var days = thisRowCells[tdIndexDays].innerText.trim();
-				var subj = thisRowCells[tdIndexSubj].innerText.trim();
-				var numb = thisRowCells[tdIndexNumb].innerText.trim();
-				var desc = thisRowCells[tdIndexTitle].innerText.trim();
-				var CRN =  thisRowCells[tdIndexCRN].innerText.trim();
+				var days = thisRowCells[tdIndexDays].textContent.trim();
+				var subj = thisRowCells[tdIndexSubj].textContent.trim();
+				var numb = thisRowCells[tdIndexNumb].textContent.trim();
+				var desc = thisRowCells[tdIndexTitle].textContent.trim();
+				var CRN =  thisRowCells[tdIndexCRN].textContent.trim();
 				//-- Conditionally assign classes that will be used for filtering
 				thisRow.addClass('filter-all filter-shown');
 				//-- Day of the week
@@ -769,14 +890,25 @@ function scheduleProcessor(data) {
 						thisRow.addClass('filter-dow-U');
 					}
 				}
-				//-- Closed section
-				if(thisRowCells[tdIndexStatus].innerText.trim() === 'C') {
-					thisRow.addClass('filter-closedSection');
-					nextRowCells.length && nextRowCells[tdIndexSubj].innerText.trim() === '' && nextRow.addClass('filter-closedSection');
+				//-- Course level, i.e. 1xxx, 2xxx, etc
+				if(numb.length > 0) {
+					thisRow.addClass('filter-level-' + numb.substring(0,1));
 				}
-				//-- Assign course title for lab sessions without CRN
-				if(nextRowCells.length && nextRowCells[tdIndexSubj].innerText.trim() === '') {
-					nextRowCells[tdIndexTitle].innerText = 'Lab session for \'' + subj + ' ' + numb + '\' (CRN:' + CRN + ')';
+				//-- Closed section
+				if(thisRowCells[tdIndexStatus].textContent.trim() === 'C') {
+					thisRow.addClass('filter-closedSection');
+				}
+				//-- Assign course title for lab sessions without CRN and copy 'parent' classes
+				if(nextRowCells.length && nextRowCells[tdIndexSubj].textContent.trim() === '') {
+					nextRowCells[tdIndexTitle].textContent = 'Lab session for \'' + subj + ' ' + numb + '\' (CRN:' + CRN + ')';
+					var thisRowClasses = thisRow.attr('class').split(/\s+/gi);
+					$.each(thisRowClasses, function(index) {
+						var cl = thisRowClasses[index];
+						if(cl.indexOf('filter-dow') > -1) {
+							return true;
+						}
+						nextRow.addClass(cl);
+					})
 				}
 				//-- Process good looking 'subject' entries
 				if(subj.length >= 3) {
@@ -815,6 +947,9 @@ function scheduleProcessor(data) {
 				nameMap[name].td.push(tdName);
 			});
 			localStorage.setItem('sched.tables(' + thisTableHash + ')',thisTable.html());
+			if(localStorage.getItem('sched.param(debug)') !== '0') {
+				console.log('Hash value of \'' + tableLetter + '\'-table has changed');
+			}
 		}
 		else {
 			thisTable.html(localStorage.getItem('sched.tables(' + thisTableHash + ')'));
@@ -845,8 +980,8 @@ function scheduleProcessor(data) {
 				var thisRow = $(this)
 				var thisRowCells = thisRow.find('td');
 				thisRow
-				.data('subj',thisRowCells[tdIndexSubj].innerText.trim())
-				.data('numb',thisRowCells[tdIndexNumb].innerText.trim())
+				.data('subj',thisRowCells[tdIndexSubj].textContent.trim())
+				.data('numb',thisRowCells[tdIndexNumb].textContent.trim())
 				.find('td:eq(' + tdIndexTitle + ') a')
 				.click(courseTitleClickHandler)
 				//-- Location pre-processing
@@ -877,6 +1012,8 @@ function scheduleProcessor(data) {
 	for(var key in nameMap) {
 		namePostProc(key, nameMap);
 	}
+	//-- Store nameMap to be used for instructor-name-based filtering
+	filterPanel.data('nameMap',nameMap);
 	//-- Attach objects to DOM
 	$('<div>')
 	.append(refreshDataLink)
@@ -922,13 +1059,8 @@ function scheduleProcessor(data) {
 			}
 			$prev = $(this);
 		});
-		/*
-		if($(window).data('topRow') !== null) {
-			smoothScrollTo($(window).data('topRow').offset().top);
-		}
-		*/
 	},1000);
-	//$('#filterButton').repeat(1000).toggleClass('stateA').wait(100).toggleClass('stateA');
+	$('#filterButton').repeat(1000).toggleClass('stateA').wait(100).toggleClass('stateA');
 }
 $(window).resize(function(){
 	$('.navigation-letters').css({

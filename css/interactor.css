@@ -34,6 +34,9 @@
 		position: relative;
 		padding: 10px;
 	}
+	.modal-body li {
+		list-style-type: none;
+	}
 	.modal-body img {
 		padding-bottom : 0px !important;
 	}
@@ -88,21 +91,27 @@
 	div.filterPanel-container {
 		border : 1px solid black;
 		border-radius: 7px;
-		padding : 5px;
+		padding : 7px;
 		position : fixed;
 		display : inline-block;
 		background : rgba(250, 255, 250, 1.0);
-		max-width : 500px;
+		max-width : 550px;
 		font-size : 80%;
 		z-index : 100;
 	}
 	div.filterPanel-container fieldset p {
 		color : rgb(0, 0, 153);
 		margin : 0px;
+		font-family : arial;
+	}
+	div.filterPanel-container fieldset legend,
+	div.filterPanel-container fieldset label {
+		font-family : arial;
 	}
 	div.filterPanel-container fieldset p ul {
 		margin : 5px;
 	}
+	div.filterPanel-container div.filterPanel-levelItem,
 	div.filterPanel-container div.filterPanel-dowItem,
 	div.filterPanel-container div.filterPanel-closedSection,
 	div.filterPanel-container div.filterPanel-genInfo {
@@ -111,7 +120,8 @@
 		padding-bottom : 5px;
 		display : inline-block;
 	}
-	div.filterPanel-container div.dow-Any {
+	div.filterPanel-container div.dow-Any,
+	div.filterPanel-container div.level-Any {
 		margin-left : 1em;
 	}
 	div.filterPanel-container div.filterPanel-closedSection {
@@ -131,6 +141,19 @@
 		float : right;
 		margin-top: 7px;
 		margin-left : 10px;
+	}
+	div.filterPanel-container input[type='text'] {
+		float : left;
+		width : 350px;
+		padding: 6px;
+		margin-top: 7px;
+		margin-left: 3px;
+		border : 1px solid black;
+		border-radius : 5px;
+	}
+	div.filterPanel-container input[type='text']:focus {
+		border : 1px solid blue;
+		outline: 0;
 	}
 /* --- Filter button --- */
 	#filterButton	{
@@ -237,7 +260,7 @@
 		width : 4%;
 	}
 	div.filter-allTables table th.col-days {
-		width : 4%;
+		width : 6%;
 	}
 	div.filter-allTables table th.col-time {
 		width : 14%;
@@ -261,6 +284,22 @@
 	@media only screen and (min-width : 1600px) {
 		body {
 			font-size : large;
+		}
+		div.filterPanel-container {
+			padding : 20px;
+			max-width : 800px;
+		}
+		div.filterPanel-container fieldset.filterPanel-hide,
+		div.filterPanel-container fieldset.filterPanel-dow,
+		div.filterPanel-container fieldset.filterPanel-level {
+			margin-bottom : 10px;
+		}
+		.modal-body {
+			padding: 10px;
+		}
+		div.filterPanel-container input[type='text'] {
+			width : 550px;
+			margin-top: 10px;
 		}
 	}
 
