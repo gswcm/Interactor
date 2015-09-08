@@ -23,6 +23,7 @@ function filterApplyHandler() {
 	//-- Clean up previous settings for 'filter-hidden' and 'filter-shown' classes
 	$('.filter-hidden').removeClass('filter-hidden');
 	$('.filter-shown').removeClass('filter-shown');
+	$('.filter-name-whitelist').removeClass('filter-name-whitelist');
 	//-- Handling selected course levels
 	var levelItems = $('div.filterPanel-container input[data-type="level-pattern"]:not(:checked)');
 	if($('div.filterPanel-container input[data-type="level-any"]').prop('checked') === false) {
@@ -43,6 +44,21 @@ function filterApplyHandler() {
 		else {
 			$('.filter-all:not(.filter-genInfo)').addClass('filter-hidden');
 		}
+	}
+	//-- Handling 'Name'-filter
+	var instName = $('div.filterPanel-container input[name=name-entry]').val().toLowerCase();
+	if(instName.length > 0) {
+		var nameMap = $('div.filterPanel-container').data('nameMap');
+		for(var name in nameMap) {
+			if(name.toLowerCase().indexOf(instName) > -1) {
+				$(nameMap[name].td).map(function(){
+					return this.toArray()
+				})
+				.parent()
+				.addClass('filter-name-whitelist');
+			}
+		}
+		$('.filter-all:not(.filter-name-whitelist):not(.filter-genInfo)').addClass('filter-hidden');
 	}
 	//-- General info div
 	if($('div.filterPanel-genInfo').find('input')[0].checked) {
@@ -307,14 +323,6 @@ function getFilterPanel() {
 				$('<legend>')
 				.html('<b>Course levels to show</b>')
 			)
-			/*
-			.append(
-				$('<p>')
-				.html(
-					'Specify combination of course levels, i.e. <b>1xxx</b>, <b>2xxx</b>, etc or <b>Any</b> to show'
-				)
-			)
-			*/
 		)
 	);
 	var level = "0xxx 1xxx 2xxx 3xxx 4xxx 5xxx 6xxx 7xxx 8xxx Any".split(/\s+/gi);
@@ -378,7 +386,7 @@ function getFilterPanel() {
 		});
 	})
 	.end()
-	//Course level checkboxes
+	// Course level checkboxes
 	.find('div.level-Any').each(function(){
 		var input = $(this).find('input');
 		input
@@ -403,6 +411,17 @@ function getFilterPanel() {
 		});
 	})
 	.end()
+	// Instructor name filter
+	.append(
+		$('<input>')
+		.attr({
+			'type' :  			'text',
+			'name' :  			'name-entry',
+			'title' : 			'Enter a part of or entire last name of instructor(s) to limit list of displayed classes. Exact match can be made ' +
+									'by using combination of the last name along with initial as listed in corresponding table column, e.g. \'Doe, J\'',
+			'placeholder' : 	'Last name of the instructor to filter class records'
+		})
+	)
 	.append(
 		$('<button>')
 		.text('Close')
@@ -993,6 +1012,8 @@ function scheduleProcessor(data) {
 	for(var key in nameMap) {
 		namePostProc(key, nameMap);
 	}
+	//-- Store nameMap to be used for instructor-name-based filtering
+	filterPanel.data('nameMap',nameMap);
 	//-- Attach objects to DOM
 	$('<div>')
 	.append(refreshDataLink)

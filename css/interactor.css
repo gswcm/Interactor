@@ -91,7 +91,7 @@
 	div.filterPanel-container {
 		border : 1px solid black;
 		border-radius: 7px;
-		padding : 5px;
+		padding : 7px;
 		position : fixed;
 		display : inline-block;
 		background : rgba(250, 255, 250, 1.0);
@@ -141,6 +141,19 @@
 		float : right;
 		margin-top: 7px;
 		margin-left : 10px;
+	}
+	div.filterPanel-container input[type='text'] {
+		float : left;
+		width : 350px;
+		padding: 6px;
+		margin-top: 7px;
+		margin-left: 3px;
+		border : 1px solid black;
+		border-radius : 5px;
+	}
+	div.filterPanel-container input[type='text']:focus {
+		border : 1px solid blue;
+		outline: 0;
 	}
 /* --- Filter button --- */
 	#filterButton	{
@@ -279,10 +292,14 @@
 		div.filterPanel-container fieldset.filterPanel-hide,
 		div.filterPanel-container fieldset.filterPanel-dow,
 		div.filterPanel-container fieldset.filterPanel-level {
-			margin-bottom : 15px;
+			margin-bottom : 10px;
 		}
 		.modal-body {
-			padding: 15px;
+			padding: 10px;
+		}
+		div.filterPanel-container input[type='text'] {
+			width : 550px;
+			margin-top: 10px;
 		}
 	}
 
