@@ -307,12 +307,14 @@ function getFilterPanel() {
 				$('<legend>')
 				.html('<b>Course levels to show</b>')
 			)
+			/*
 			.append(
 				$('<p>')
 				.html(
 					'Specify combination of course levels, i.e. <b>1xxx</b>, <b>2xxx</b>, etc or <b>Any</b> to show'
 				)
 			)
+			*/
 		)
 	);
 	var level = "0xxx 1xxx 2xxx 3xxx 4xxx 5xxx 6xxx 7xxx 8xxx Any".split(/\s+/gi);
