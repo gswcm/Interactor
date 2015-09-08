@@ -144,7 +144,7 @@
 	}
 	div.filterPanel-container input[type='text'] {
 		float : left;
-		width : 350px;
+		width : 300px;
 		padding: 6px;
 		margin-top: 7px;
 		margin-left: 3px;
@@ -154,6 +154,26 @@
 	div.filterPanel-container input[type='text']:focus {
 		border : 1px solid blue;
 		outline: 0;
+	}
+	div.filterPanel-container button	{
+		border-radius : 5px;
+		border : 1px solid black;
+		background : rgba(242, 255, 242, 1.0);
+		padding : 5px 10px;
+		color : rgb(0, 0, 153);
+		font-weight: bold;
+		font-family: arial;
+		cursor: pointer;
+		margin-right : 3px;
+		z-index : 150;
+	}
+	div.filterPanel-container button:hover	{
+		color : black;
+		outline : 0;
+	}
+	div.filterPanel-container button:active	{
+		color : red;
+		outline : 0;
 	}
 /* --- Filter button --- */
 	#filterButton	{
@@ -300,6 +320,9 @@
 		div.filterPanel-container input[type='text'] {
 			width : 550px;
 			margin-top: 10px;
+		}
+		div.filterPanel-container button {
+			margin-top : 10px;
 		}
 	}
 
