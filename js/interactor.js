@@ -676,9 +676,11 @@ function updateLocationInfo(locMap, mapHTML, foundLocal) {
 					});
 				}
 				else {
+					var clickedElement = $(window).data('locTooltipAnchor');
 					toolTipContainer
 					.css({
-						'top' :  $(window).data('locTooltipAnchor').offset().top - toolTipContainer.height() - 10
+						'top' :  clickedElement.offset().top - toolTipContainer.height(),
+						'left' : clickedElement.offset().left - toolTipContainer.width()/2
 					});
 				}
 				toolTipContainer
