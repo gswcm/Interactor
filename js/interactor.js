@@ -449,6 +449,7 @@ function getFilterPanel() {
 	)
 	.append(
 		$('<button>')
+		.attr('id','filterPanel-close')
 		.text('Close')
 		.click(function(e){
 			$('div.filterPanel-container').hide();
@@ -456,11 +457,13 @@ function getFilterPanel() {
 	)
 	.append(
 		$('<button>')
+		.attr('id','filterPanel-apply')
 		.text('Apply')
 		.click(filterApplyHandler)
 	)
 	.append(
 		$('<button>')
+		.attr('id','filterPanel-reset')
 		.text('Reset')
 		.click(filterResetHandler)
 	)
@@ -651,50 +654,44 @@ function updateLocationInfo(locMap, mapHTML, foundLocal) {
 		$('<a>')
 		.attr('href','#')
 		.click(function(){
-			$(window).data('locTooltipAnchor',$(this))
+			var clickedElement = $(this);
+			if($('div.tooltip-container').length === 0) {
+				$('#topOfThePage')
+				.after(
+					$('<div>')
+					.addClass('tooltip-container')
+					.click(function(){
+						$(this).remove();
+					})
+				)
+			}
+			//-- Inflate tooltip container with passed HTML
+			var toolTipContainer =
+				$('div.tooltip-container')
+				.html(mapHTML)
+				.css({
+					'top' :  0,
+					'left' : 0,
+					'position' : 'absolute'
+				});
+			//-- Reposition the container into right place calculated with respect to its size
+			if(isMobile()) {
+				toolTipContainer
+				.css({
+					'left' : ($(window).width() - toolTipContainer.width())/2,
+					'top' :  ($(window).height() - toolTipContainer.height())/2 + $(window).scrollTop()
+				});
+			}
+			else {
+				toolTipContainer
+				.css({
+					'top' :  clickedElement.offset().top - toolTipContainer.height(),
+					'left' : clickedElement.offset().left - toolTipContainer.width()/2
+				});
+			}
 			return false;
 		})
 		.text(locMap.locKey)
-		.addClass('tooltip')
-		.tooltipster({
-			content: $(mapHTML),
-			theme: 'tooltipster-light',
-			interactive: true,
-			delay: 0,
-			arrow : false,
-			onlyOne: true,
-			trigger: 'click',
-			positionTracker : true,
-			autoClose: true,
-			functionReady: function(origin,tooltip){
-				var toolTipContainer = $(tooltip);
-				if(isMobile()) {
-					toolTipContainer
-					.css({
-						'left' : ($(window).width() - toolTipContainer.width())/2,
-						'top' :  ($(window).height() - toolTipContainer.height())/2 + $(window).scrollTop()
-					});
-				}
-				else {
-					var clickedElement = $(window).data('locTooltipAnchor');
-					toolTipContainer
-					.css({
-						'top' :  clickedElement.offset().top - toolTipContainer.height(),
-						'left' : clickedElement.offset().left - toolTipContainer.width()/2
-					});
-				}
-				toolTipContainer
-				.css({
-					'background' : 'transparent',
-					'border':'none',
-					'padding':'0px 0px'
-				})
-				.click(function(){
-					$('.tooltip').tooltipster('hide');
-				})
-				.find('.tooltipster-content').css({'padding':'0px'});
-			}
-		})
 		.prependTo(locMap.td)
 }
 //------------------------------------------------------------------------------------------------
@@ -1124,7 +1121,7 @@ $(document).keydown(function(e){
 			filterPanel.hide();
 		}
 		else if(code === 13) {
-			filterPanel.find('button').trigger('click');
+			$('#filterPanel-apply').trigger('click');
 		}
 	}
 });
