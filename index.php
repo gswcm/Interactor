@@ -47,14 +47,11 @@ if(isset($_GET['ver']) and $_GET['ver'] !== '') {
 	}
 	?>
 	<link rel="stylesheet" type="text/css" href="css/interactor.css" />
-	<link rel="stylesheet" type="text/css" href="css/tooltipster.css" />
-	<link rel="stylesheet" type="text/css" href="css/themes/tooltipster-light.css" />
 	<script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.js"></script>
 	<script type="text/javascript" src="js/jquery-timing.min.js"></script>
 	<script type="text/javascript" src="js/xxhash.min.lmd.js"></script>
 	<script type="text/javascript" src="js/buildings.js"></script>
 	<script type="text/javascript" src="js/interactor.js"></script>
-	<script type="text/javascript" src="js/jquery.tooltipster.min.js"></script>
 	<script src="//fast.eager.io/KozO437RIl.js"></script>
 
 </head>

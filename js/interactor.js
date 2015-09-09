@@ -16,6 +16,46 @@ $.fn.scrollEnd = function(callback, timeout) {
 $.fn.getHTML= function() {
 	return $('<a></a>').append(this.clone()).html();
 }
+//--------------------------------------------------
+// Generate and display tooltip based on given HTML
+//--------------------------------------------------
+function tooltipConstructor(clickedElement, HTML) {
+	if($('div.tooltip-container').length === 0) {
+		$('#topOfThePage')
+		.after(
+			$('<div>')
+			.addClass('tooltip-container')
+			.addClass('no-print')
+			.click(function(){
+				$(this).remove();
+			})
+		)
+	}
+	//-- Inflate tooltip container with passed HTML
+	var toolTipContainer =
+		$('div.tooltip-container')
+		.html(HTML)
+		.css({
+			'top' :  0,
+			'left' : 0,
+			'position' : 'absolute'
+		});
+	//-- Reposition the container into right place calculated with respect to its size
+	if(isMobile()) {
+		toolTipContainer
+		.css({
+			'left' : ($(window).width() - toolTipContainer.width())/2,
+			'top' :  ($(window).height() - toolTipContainer.height())/2 + $(window).scrollTop()
+		});
+	}
+	else {
+		toolTipContainer
+		.css({
+			'top' :  clickedElement.offset().top - toolTipContainer.height(),
+			'left' : clickedElement.offset().left - toolTipContainer.width()
+		});
+	}
+}
 //--------------------------------------
 // Filter dialog 'Reset' action handler
 //--------------------------------------
@@ -449,6 +489,7 @@ function getFilterPanel() {
 	)
 	.append(
 		$('<button>')
+		.attr('id','filterPanel-close')
 		.text('Close')
 		.click(function(e){
 			$('div.filterPanel-container').hide();
@@ -456,11 +497,13 @@ function getFilterPanel() {
 	)
 	.append(
 		$('<button>')
+		.attr('id','filterPanel-apply')
 		.text('Apply')
 		.click(filterApplyHandler)
 	)
 	.append(
 		$('<button>')
+		.attr('id','filterPanel-reset')
 		.text('Reset')
 		.click(filterResetHandler)
 	)
@@ -651,50 +694,10 @@ function updateLocationInfo(locMap, mapHTML, foundLocal) {
 		$('<a>')
 		.attr('href','#')
 		.click(function(){
-			$(window).data('locTooltipAnchor',$(this))
+			tooltipConstructor($(this),mapHTML);
 			return false;
 		})
 		.text(locMap.locKey)
-		.addClass('tooltip')
-		.tooltipster({
-			content: $(mapHTML),
-			theme: 'tooltipster-light',
-			interactive: true,
-			delay: 0,
-			arrow : false,
-			onlyOne: true,
-			trigger: 'click',
-			positionTracker : true,
-			autoClose: true,
-			functionReady: function(origin,tooltip){
-				var toolTipContainer = $(tooltip);
-				if(isMobile()) {
-					toolTipContainer
-					.css({
-						'left' : ($(window).width() - toolTipContainer.width())/2,
-						'top' :  ($(window).height() - toolTipContainer.height())/2 + $(window).scrollTop()
-					});
-				}
-				else {
-					var clickedElement = $(window).data('locTooltipAnchor');
-					toolTipContainer
-					.css({
-						'top' :  clickedElement.offset().top - toolTipContainer.height(),
-						'left' : clickedElement.offset().left - toolTipContainer.width()/2
-					});
-				}
-				toolTipContainer
-				.css({
-					'background' : 'transparent',
-					'border':'none',
-					'padding':'0px 0px'
-				})
-				.click(function(){
-					$('.tooltip').tooltipster('hide');
-				})
-				.find('.tooltipster-content').css({'padding':'0px'});
-			}
-		})
 		.prependTo(locMap.td)
 }
 //------------------------------------------------------------------------------------------------
@@ -711,10 +714,6 @@ function updateInstructorInfo(nameMap, text, foundLocal) {
 			nameMap
 			.td[tdIndex]
 			.attr('title','No record found in the directory')
-			.addClass('tooltip')
-			.tooltipster({
-				theme: 'tooltipster-light'
-			});
 		}
 		if(localStorage.getItem('sched.param(debug)') !== '0') {
 			console.log('Employee directory has no record for \'' + lname + '\'');
@@ -727,8 +726,9 @@ function updateInstructorInfo(nameMap, text, foundLocal) {
 			.addClass('td-tooltip')
 			.empty();
 		}
-		var tipContenet =
+		var tipContent =
 			$('<div>')
+			.addClass('name-tooltip')
 			.append(text)
 			.append(
 				$('<span>')
@@ -741,37 +741,10 @@ function updateInstructorInfo(nameMap, text, foundLocal) {
 		var a = $('<a>')
 			.attr('href','#')
 			.click(function(){
-				$(window).data('nameTooltipAnchor',$(this))
+				tooltipConstructor($(this),tipContent);
 				return false;
 			})
 			.text(name)
-			.addClass('tooltip')
-			.tooltipster({
-				content: tipContenet,
-				trigger: 'click',
-				theme: 'tooltipster-light',
-				arrow: false,
-				interactive: true,
-				functionReady: function(origin,tooltip){
-					var toolTipContainer = $(tooltip);
-					if(isMobile()) {
-						toolTipContainer
-						.css({
-							'left' : ($(window).width() - toolTipContainer.width())/2,
-							'top' :  ($(window).height() - toolTipContainer.height())/2 + $(window).scrollTop()
-						});
-					}
-					else {
-						toolTipContainer
-						.css({
-							'top' :  $(window).data('nameTooltipAnchor').offset().top - toolTipContainer.height() - 10
-						});
-					}
-					toolTipContainer.click(function(){
-						$('.tooltip').tooltipster('hide');
-					});
-				}
-			})
 			.appendTo(nameMap.td);
 	}
 }
@@ -1117,14 +1090,14 @@ $(document).keydown(function(e){
 	var filterPanel = $('.filterPanel-container');
 
 	if(code === 27) {
-		$('.tooltip').tooltipster('hide');
+		$('.tooltip-container').remove();
 	}
 	if(filterPanel.filter(':hidden').length === 0) {
 		if(code === 27) {
 			filterPanel.hide();
 		}
 		else if(code === 13) {
-			filterPanel.find('button').trigger('click');
+			$('#filterPanel-apply').trigger('click');
 		}
 	}
 });
