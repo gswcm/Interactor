@@ -17,6 +17,27 @@ $.fn.getHTML= function() {
 	return $('<a></a>').append(this.clone()).html();
 }
 //--------------------------------------
+// Filter dialog 'Reset' action handler
+//--------------------------------------
+function filterResetHandler() {
+	var fsHide = $('.filterPanel-hide');
+	var fsDoW = $('.filterPanel-dow');
+	var fsLevel = $('.filterPanel-level');
+	var itName = $('div.filterPanel-container input[type="text"]');
+
+	//-- 'Items to Hide' fieldset
+	fsHide.find('input').prop('checked',false);
+	//-- 'Days of the week to show' fieldset
+	fsDoW.find('input').prop('checked',false);
+	fsDoW.find('input[data-val=Any]').trigger('click');
+	//-- 'Course levels to show' fieldset
+	fsLevel.find('input').prop('checked',false);
+	fsLevel.find('input[data-val=Any]').trigger('click');
+	//-- Instructor name textinput
+	itName.val('');
+	return false;
+}
+//--------------------------------------
 // Filter dialog 'Apply' action handler
 //--------------------------------------
 function filterApplyHandler() {
@@ -89,6 +110,8 @@ function filterApplyHandler() {
 	if($(window).data('topRow') !== null) {
 		smoothScrollTo($(window).data('topRow').offset().top);
 	}
+	//-- Trigger windows resize event to re-place naviation letterbar
+	$(window).trigger('resize');
 }
 
 //---------------------------------------
@@ -255,8 +278,10 @@ function smoothScrollTo(position) {
 // Filter panel
 //--------------
 function getFilterPanel() {
-	var filterContent = $('<div>').addClass('filterPanel-container');
-	filterContent
+	var filterContent =
+	$('<div>')
+	.addClass('filterPanel-container')
+	.addClass('no-print')
 	.append(
 		$('<form>')
 		.append(
@@ -428,13 +453,16 @@ function getFilterPanel() {
 		.click(function(e){
 			$('div.filterPanel-container').hide();
 		})
-		.button()
 	)
 	.append(
 		$('<button>')
 		.text('Apply')
 		.click(filterApplyHandler)
-		.button()
+	)
+	.append(
+		$('<button>')
+		.text('Reset')
+		.click(filterResetHandler)
 	)
 	.find('input').click(function(e){
 		this.checked = !(this.checked);
@@ -452,6 +480,7 @@ function getLetterBar() {
 	var letterBar =
 		$('<div>')
 		.addClass('navigation-letters')
+		.addClass('no-print')
 		.append(
 			$('<table>')
 		)
@@ -529,6 +558,7 @@ function getGenInfo(rawData) {
 	var result =
 	$('<div>')
 	.addClass('filter-genInfo filter-all filter-shown genInfo-container')
+	.addClass('no-print')
 	.append(
 		rawData.find('h2')
 	)
@@ -781,6 +811,7 @@ function scheduleProcessor(data) {
 			'href' : '#',
 			'id' : 'refreshLink'
 		})
+		.addClass('no-print')
 		.text('Refresh interactive content')
 		.click(function(){
 			localStorage.clear();
@@ -795,6 +826,7 @@ function scheduleProcessor(data) {
 	var filterButton =
 		$('<div>')
 		.attr('id','filterButton')
+		.addClass('no-print')
 		.text('Filter')
 		.click(function(e){
 			$('div.filterPanel-container')

@@ -46,17 +46,10 @@ if(isset($_GET['ver']) and $_GET['ver'] !== '') {
 		echo '<meta name="viewport" content="width=620, maximum-scale=1">';
 	}
 	?>
-	<link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css" />
-	<link rel="stylesheet" type="text/css" href="css/jquery-ui.structure.min.css" />
-	<link rel="stylesheet" type="text/css" href="css/jquery-ui.theme.min.css" />
 	<link rel="stylesheet" type="text/css" href="css/interactor.css" />
 	<link rel="stylesheet" type="text/css" href="css/tooltipster.css" />
-	<link rel="stylesheet" type="text/css" href="css/themes/tooltipster-shadow.css" />
 	<link rel="stylesheet" type="text/css" href="css/themes/tooltipster-light.css" />
-	<link rel="stylesheet" type="text/css" href="css/themes/tooltipster-noir.css" />
-	<link rel="stylesheet" type="text/css" href="css/themes/tooltipster-punk.css" />
 	<script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.js"></script>
-	<script type="text/javascript" src="js/jquery-ui.min.js"></script>
 	<script type="text/javascript" src="js/jquery-timing.min.js"></script>
 	<script type="text/javascript" src="js/xxhash.min.lmd.js"></script>
 	<script type="text/javascript" src="js/buildings.js"></script>
