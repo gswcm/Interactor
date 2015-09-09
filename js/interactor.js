@@ -278,8 +278,10 @@ function smoothScrollTo(position) {
 // Filter panel
 //--------------
 function getFilterPanel() {
-	var filterContent = $('<div>').addClass('filterPanel-container');
-	filterContent
+	var filterContent =
+	$('<div>')
+	.addClass('filterPanel-container')
+	.addClass('no-print')
 	.append(
 		$('<form>')
 		.append(
@@ -478,6 +480,7 @@ function getLetterBar() {
 	var letterBar =
 		$('<div>')
 		.addClass('navigation-letters')
+		.addClass('no-print')
 		.append(
 			$('<table>')
 		)
@@ -555,6 +558,7 @@ function getGenInfo(rawData) {
 	var result =
 	$('<div>')
 	.addClass('filter-genInfo filter-all filter-shown genInfo-container')
+	.addClass('no-print')
 	.append(
 		rawData.find('h2')
 	)
@@ -807,6 +811,7 @@ function scheduleProcessor(data) {
 			'href' : '#',
 			'id' : 'refreshLink'
 		})
+		.addClass('no-print')
 		.text('Refresh interactive content')
 		.click(function(){
 			localStorage.clear();
@@ -821,6 +826,7 @@ function scheduleProcessor(data) {
 	var filterButton =
 		$('<div>')
 		.attr('id','filterButton')
+		.addClass('no-print')
 		.text('Filter')
 		.click(function(e){
 			$('div.filterPanel-container')

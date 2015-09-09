@@ -226,7 +226,8 @@
 		border-spacing : 0;
 		border-collapse : collapse;
 	}
-	div.filter-allTables table tr td {
+	div.filter-allTables table tr td,
+	div.filter-allTables table tr th {
 		padding : 4px;
 	}
 	div.filter-allTables table tr:first-of-type {
@@ -300,7 +301,6 @@
 			display : none;
 		}
 	}
-/* -- Body -- */
 	@media only screen and (min-width : 1600px) {
 		body {
 			font-size : large;
@@ -323,6 +323,22 @@
 		}
 		div.filterPanel-container button {
 			margin-top : 10px;
+		}
+	}
+	@media print {
+		@page {
+			size: landscape;
+		}
+		table * {
+			font-size : x-small;
+			color : black;
+			text-decoration : none;
+		}
+		table tr td, table tr th {
+			page-break-inside : avoid;
+		}
+		.no-print, .no-print * {
+			display : none !important;
 		}
 	}
 
