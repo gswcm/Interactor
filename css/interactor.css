@@ -11,6 +11,19 @@
 	td.td-tooltip a {
 		cursor : help;
 	}
+/* -- Name tooltip -- */
+	.name-tooltip {
+		background : white;
+		z-index : 1050;
+		font-family : arial;
+		font-size : small;
+		padding : 10px;
+		border: 1px solid rgba(0, 0, 0, 0.2);
+		border-radius: 6px;
+		outline: none;
+		box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
+		background-clip: padding-box;
+	}
 /* -- Location tooltip -- */
 	.modal-dialog {
 		position: relative;
