@@ -16,46 +16,6 @@ $.fn.scrollEnd = function(callback, timeout) {
 $.fn.getHTML= function() {
 	return $('<a></a>').append(this.clone()).html();
 }
-//--------------------------------------------------
-// Generate and display tooltip based on given HTML
-//--------------------------------------------------
-function tooltipConstructor(clickedElement, HTML) {
-	if($('div.tooltip-container').length === 0) {
-		$('#topOfThePage')
-		.after(
-			$('<div>')
-			.addClass('tooltip-container')
-			.addClass('no-print')
-			.click(function(){
-				$(this).remove();
-			})
-		)
-	}
-	//-- Inflate tooltip container with passed HTML
-	var toolTipContainer =
-		$('div.tooltip-container')
-		.html(HTML)
-		.css({
-			'top' :  0,
-			'left' : 0,
-			'position' : 'absolute'
-		});
-	//-- Reposition the container into right place calculated with respect to its size
-	if(isMobile()) {
-		toolTipContainer
-		.css({
-			'left' : ($(window).width() - toolTipContainer.width())/2,
-			'top' :  ($(window).height() - toolTipContainer.height())/2 + $(window).scrollTop()
-		});
-	}
-	else {
-		toolTipContainer
-		.css({
-			'top' :  clickedElement.offset().top - toolTipContainer.height(),
-			'left' : clickedElement.offset().left - toolTipContainer.width()
-		});
-	}
-}
 //--------------------------------------
 // Filter dialog 'Reset' action handler
 //--------------------------------------
@@ -692,9 +652,48 @@ function updateLocationInfo(locMap, mapHTML, foundLocal) {
 	}
 	var a =
 		$('<a>')
-		.attr('href','#')
+		.attr('href','')
 		.click(function(){
-			tooltipConstructor($(this),mapHTML);
+			var clickElement = $(this);
+			//-- Create tooltip container if does not exist
+			if($('div.tooltip-container').length === 0) {
+				$('#topOfThePage')
+				.after(
+					$('<div>')
+					.addClass('tooltip-container')
+					.addClass('no-print')
+					.click(function(){
+						$(this).remove();
+					})
+				)
+			}
+			//-- Make sure content is loaded
+			var toolTipContainer =
+				$('div.tooltip-container')
+				.html(
+					$(mapHTML)
+					.find('img:last')
+					.on('load',function(){
+						if(isMobile()) {
+							toolTipContainer
+							.css({
+								'left' : ($(window).width() - toolTipContainer.width())/2,
+								'top' :  ($(window).height() - toolTipContainer.height())/2 + $(window).scrollTop()
+							});
+						}
+						else {
+							toolTipContainer
+							.css({
+								'top' :  clickElement.offset().top - toolTipContainer.height(),
+								'left' : clickElement.offset().left - toolTipContainer.width()
+							});
+						}
+					})
+					.end()
+				)
+				.css({
+					'position' : 'absolute'
+				})
 			return false;
 		})
 		.text(locMap.locKey)
@@ -739,9 +738,41 @@ function updateInstructorInfo(nameMap, text, foundLocal) {
 				)
 			);
 		var a = $('<a>')
-			.attr('href','#')
+			.attr('href','')
 			.click(function(){
-				tooltipConstructor($(this),tipContent);
+				var clickElement = $(this);
+				//-- Create tooltip container if does not exist
+				if($('div.tooltip-container').length === 0) {
+					$('#topOfThePage')
+					.after(
+						$('<div>')
+						.addClass('tooltip-container')
+						.addClass('no-print')
+						.click(function(){
+							$(this).remove();
+						})
+					)
+				}
+				var toolTipContainer =
+					$('div.tooltip-container')
+					.html(tipContent)
+					.css({
+						'position' : 'absolute'
+					})
+				if(isMobile()) {
+					toolTipContainer
+					.css({
+						'left' : ($(window).width() - toolTipContainer.width())/2,
+						'top' :  ($(window).height() - toolTipContainer.height())/2 + $(window).scrollTop()
+					});
+				}
+				else {
+					toolTipContainer
+					.css({
+						'top' :  clickElement.offset().top - toolTipContainer.height(),
+						'left' : clickElement.offset().left - toolTipContainer.width()
+					});
+				}
 				return false;
 			})
 			.text(name)
