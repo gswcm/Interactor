@@ -22,29 +22,24 @@
 		border-radius: 6px;
 		outline: none;
 		box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
-		background-clip: padding-box;
 	}
 /* -- Location tooltip -- */
 	.modal-dialog {
-		position: relative;
+		//position: relative;
 		width: 400px;
 		z-index: 1050;
 		margin: 0px;
 	}
 	.modal-content {
-		position: relative;
 		background-color: #ffffff;
-		border: 1px solid #999999;
 		border: 1px solid rgba(0, 0, 0, 0.2);
-		font-size: 12px;
+		font-family : arial;
+		font-size : small;
 		border-radius: 6px;
 		outline: none;
-		-webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
-				box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
-		background-clip: padding-box;
+		box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
 	}
 	.modal-body {
-		position: relative;
 		padding: 10px;
 	}
 	.modal-body li {
@@ -102,8 +97,8 @@
 	}
 /* -- Filter panel -- */
 	div.filterPanel-container {
-		border : 1px solid black;
-		border-radius: 7px;
+		border: 1px solid rgba(0, 0, 0, 0.2);
+		border-radius: 6px;
 		padding : 7px;
 		position : fixed;
 		display : inline-block;
@@ -111,6 +106,8 @@
 		max-width : 550px;
 		font-size : 80%;
 		z-index : 100;
+		outline : 0;
+		box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
 	}
 	div.filterPanel-container fieldset p {
 		color : rgb(0, 0, 153);
