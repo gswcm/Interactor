@@ -134,6 +134,13 @@
 	div.filterPanel-container div.level-Any {
 		margin-left : 1em;
 	}
+	div.filterPanel-container div.dow-Not {
+		float : right;
+		border : 1px dashed red;
+		border-radius : 3px;
+		padding-left : 3px;
+		padding-right : 8px;
+	}
 	div.filterPanel-container div.filterPanel-closedSection {
 		margin-left : 1em;
 	}
@@ -176,14 +183,15 @@
 		cursor: pointer;
 		margin-right : 3px;
 		z-index : 150;
+		outline : 0;
 	}
 	div.filterPanel-container button:hover	{
 		color : black;
-		outline : 0;
+		//outline : 0;
 	}
 	div.filterPanel-container button:active	{
 		color : red;
-		outline : 0;
+		//outline : 0;
 	}
 /* --- Filter button --- */
 	#filterButton	{

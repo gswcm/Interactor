@@ -9,7 +9,7 @@ $debug = '1';
 if(isset($_GET['debug']) and $_GET['debug'] !== '') {
 	$debug = $_GET['debug'];
 }
-$version = '1.0.30';
+$version = '1.0.35';
 if(isset($_GET['ver']) and $_GET['ver'] !== '') {
 	$version = $_GET['ver'];
 }

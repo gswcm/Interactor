@@ -52,15 +52,32 @@ function filterApplyHandler() {
 			$('.filter-level-' + $(this).attr('data-val').substring(0,1)).addClass('filter-hidden')
 		})
 	}
-	//-- Handling dayes-of-the-week
-	var dowItems = $('div.filterPanel-container input[data-type="dow-day"]:checked');
-	var dowSelector = '';
-	if($('div.filterPanel-container input[data-type="dow-any"]').prop('checked') === false) {
-		dowItems.each(function(){
-			dowSelector += $(this).attr('data-val') + ' ';
-		});
-		if(dowSelector !== '') {
-			$('.filter-all:not(.filter-genInfo):not(.filter-dow-' + dowSelector.trim().replace(/\s+/g,'-') + ')').addClass('filter-hidden');
+	//-- Handling days-of-the-week
+	var dowItems = [];
+	$('div.filterPanel-container input[data-type="dow-day"]:checked').each(function(){
+		dowItems.push($(this).attr('data-val'));
+	});
+	if($('div.filterPanel-container input[data-type="dow-not"]').prop('checked') === false) {
+		if($('div.filterPanel-container input[data-type="dow-any"]').prop('checked') === false) {
+			if(dowItems.length > 0) {
+				$('.filter-all:not(.filter-genInfo):not(.filter-dow-' + dowItems.join("-") + ')').addClass('filter-hidden');
+			}
+			else {
+				$('.filter-all:not(.filter-genInfo)').addClass('filter-hidden');
+			}
+		}
+	}
+	else {
+		var dowClasses = localStorage.getItem('sched.dowClasses').split(/\s+/g);
+		if($('div.filterPanel-container input[data-type="dow-any"]').prop('checked') === false) {
+			for(var classIndex = 0, classTotal = dowClasses.length; classIndex < classTotal; classIndex++) {
+				for(var dowIndex = 0, dowTotal = dowItems.length; dowIndex < dowTotal; dowIndex++) {
+					if(dowClasses[classIndex].indexOf(dowItems[dowIndex]) > -1) {
+						$('.' + dowClasses[classIndex]).addClass('filter-hidden');
+						break;
+					}
+				}
+			}
 		}
 		else {
 			$('.filter-all:not(.filter-genInfo)').addClass('filter-hidden');
@@ -88,6 +105,10 @@ function filterApplyHandler() {
 	//-- Closed sections
 	if($('div.filterPanel-closedSection').find('input')[0].checked) {
 		$('.filter-closedSection').addClass('filter-hidden');
+	}
+	//-- Debug info: number of items to be hidden
+	if(localStorage.getItem('sched.param(debug)') !== '0') {
+		console.log($('.filter-hidden').length + ' / ' +  $('.filter-all:not(.filter-genInfo)').length + ' records hidden.');
 	}
 	//-- Show all filtered items that don't have .filter-hidden class
 	$('.filter-all:not(.filter-hidden)').addClass('filter-shown').show();
@@ -293,7 +314,7 @@ function getFilterPanel() {
 			)
 			.append(
 				$('<p>')
-				.html('Select which items to show/hide. <b>Any</b> combination is allowed.')
+				.html('Select which items to hide. <b>Any</b> combination is allowed.')
 			)
 			.append(
 				$('<div>')
@@ -335,7 +356,7 @@ function getFilterPanel() {
 					'Make sure to provide <b>exact</b> match for specific days of the week that you\'d like to be shown. ' +
 					'Anything that is not <b>explicitely</b> selected will be hidden. ' +
 					'<ul>' +
-					'<li>Uncheck <b>Any</b> item if you need to choose select particular days</li>' +
+					'<li>Uncheck <b>Any</b> item if you want to select particular days</li>' +
 					'<li>Combining <b>Online</b> or <b>U</b> (undetermined) with any other selection will always result in an <b>empty</b> list</li>' +
 					'</ul>'
 				)
@@ -369,24 +390,48 @@ function getFilterPanel() {
 			)
 		);
 	});
-	var dow = "M T W R F S U O Any".split(/\s+/gi);
+	var dow = "M T W R F S U O Any Not".split(/\s+/gi);
 	$.each(dow,function(index){
 		var day = dow[index];
-		filterContent.find('fieldset.filterPanel-dow')
+		var tooltipText = "";
+		switch (day) {
+			case "U":
+				tooltipText = "Undetermined (usually practice or semenar sessions)";
+				break;
+			case "O":
+				tooltipText = "Online, eCore, eMajor";
+				break;
+			case "Not":
+				tooltipText = "Exclusive inversion of the DoW filtering logic. For example, having 'M', 'W', and 'Not' " +
+				"selected would result in hiding course offerings associated with 'only Monday', 'only Wednesday', or both";
+				break;
+		}
+		filterContent
+		.find('fieldset.filterPanel-dow')
 		.append(
 			$('<div>')
 			.addClass('filterPanel-dowItem dow-' + day)
 			.append(
 				$('<input type="checkbox">')
-				.attr('data-val',day)
+				.attr('data-val', day)
 				.attr('name','dow-' + day)
 			)
 			.append($('<label>').text((day === "O") ? "Online" : day))
-			.attr('title',(day === "U") ? "Undetermined (usually practice or semenar sessions)" : ((day === "O") ? "Online, eCore, eMajor" : ""))
+			.attr('title', tooltipText)
 		);
 	});
 	filterContent
 	//-- Day of the week checkboxes
+	.find('div.dow-Not').each(function(){
+		var input = $(this).find('input');
+		input
+		.attr('data-type','dow-not')
+		.prop('checked', false);
+		$(this).click(function(){
+			input[0].checked = !(input[0].checked);
+		});
+	})
+	.end()
 	.find('div.dow-Any').each(function(){
 		var input = $(this).find('input');
 		input
@@ -399,7 +444,7 @@ function getFilterPanel() {
 		});
 	})
 	.end()
-	.find('div.filterPanel-dowItem:not(div.dow-Any)').each(function(){
+	.find('div.filterPanel-dowItem:not(div.dow-Any):not(div.dow-Not)').each(function(){
 		var input = $(this).find('input');
 		input
 		.attr('data-type','dow-day')
@@ -843,8 +888,9 @@ function scheduleProcessor(data) {
 			.toggle();
 		})
 	//-- Initialize maps for instructor names and locations
-	nameMap = {};
-	locMap = {};
+	var nameMap = {};
+	var locMap = {};
+	var dowClasses = [];
 	//-- Initialize xxhash engine
 	var H = XXH(0xABCD);
 	//-- Iterate through tables
@@ -909,7 +955,7 @@ function scheduleProcessor(data) {
 				thisRow
 				.find('td:eq(' + tdIndexPTRM + '),td:eq(' + tdIndexCredHours + '),td:eq(' + tdIndexTotalSeats + '),td:last-of-type')
 				.addClass('filter-antimobile');
-				var days = thisRowCells[tdIndexDays].textContent.trim();
+				var days = thisRowCells[tdIndexDays].textContent.trim().replace(/\s+/gi,'').split("").join("-");
 				var subj = thisRowCells[tdIndexSubj].textContent.trim();
 				var numb = thisRowCells[tdIndexNumb].textContent.trim();
 				var desc = thisRowCells[tdIndexTitle].textContent.trim();
@@ -917,15 +963,23 @@ function scheduleProcessor(data) {
 				//-- Conditionally assign classes that will be used for filtering
 				thisRow.addClass('filter-all filter-shown');
 				//-- Day of the week
+				var dowClass = '';
 				if(days !== '') {
-					thisRow.addClass('filter-dow-' + days.replace(/\s+/gi,'-'));
+					dowClass = 'filter-dow-' + days;
 				}
 				else {
 					if(thisRow.find('td').last().text().trim().toLowerCase().match(/online|ecore|emajor/) !== null) {
-						thisRow.addClass('filter-dow-O');
+						dowClass = 'filter-dow-O';
 					}
 					else {
-						thisRow.addClass('filter-dow-U');
+						dowClass = 'filter-dow-U';
+					}
+				}
+				if(dowClass.length > 0) {
+					thisRow.addClass(dowClass);
+					thisRow.attr('data-dow',dowClass);
+					if(dowClasses.indexOf(dowClass) === -1) {
+						dowClasses.push(dowClass);
 					}
 				}
 				//-- Course level, i.e. 1xxx, 2xxx, etc
@@ -1022,6 +1076,11 @@ function scheduleProcessor(data) {
 				.data('numb',thisRowCells[tdIndexNumb].textContent.trim())
 				.find('td:eq(' + tdIndexTitle + ') a')
 				.click(courseTitleClickHandler)
+				//-- dowClasses
+				var dowClass = thisRow.attr('data-dow');
+				if(dowClasses.indexOf(dowClass) === -1) {
+					dowClasses.push(dowClass);
+				}
 				//-- Location pre-processing
 				var tdLoc = thisRow.find("td:eq(" + tdIndexLoc + ")");
 				var loc = tdLoc.text().trim().split(" ")[0];
@@ -1041,6 +1100,7 @@ function scheduleProcessor(data) {
 			})
 		}
 	});
+	localStorage.setItem('sched.dowClasses',dowClasses.join(' '));
 	//-- Location post-processing
 	var buildingData = getBuildingData();
 	for(var key in locMap) {
