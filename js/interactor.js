@@ -489,7 +489,7 @@ function getFilterPanel() {
 			'name' :  			'name-entry',
 			'title' : 			'Enter a part of or entire last name of instructor(s) to limit list of displayed classes. Exact match can be made ' +
 									'by using combination of the last name along with initial as listed in corresponding table column, e.g. \'Doe, J\'',
-			'placeholder' : 	'Last name of the instructor to filter class records'
+			'placeholder' : 	'Last name of the instructor to filter'
 		})
 	)
 	.append(
