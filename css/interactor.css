@@ -1,3 +1,32 @@
+/* -- Blurizator -- */
+	#container.blur .filter-allTables,
+	#container.blur .filter-genInfo,
+	#container.blur .navigation-letters {
+		animation-name: filter;
+		animation-duration: 5s;
+		animation-iteration-count: 1;
+		animation-fill-mode: forwards;
+		-webkit-animation-name: filter;
+		-webkit-animation-duration: 5s;
+		-webkit-animation-iteration-count: 1;
+		-webkit-animation-fill-mode: forwards;
+		-ms-animation-name: filter;
+		-ms-animation-duration: 5s;
+		-ms-animation-iteration-count: 1;
+		-ms-animation-fill-mode: forwards;
+	}
+	@keyframes filter {
+		0%   {
+			filter: blur(0px);
+			-webkit-filter: blur(0px);
+			-ms-filter: blur(0px);
+		}
+		100% {
+			filter: blur(3px);
+			-webkit-filter: blur(3px);
+			-ms-filter: blur(3px);
+		}
+	}
 /* -- 'Refresh Interactive Content' link -- */
 	#refreshLink {
 		font-family : arial;

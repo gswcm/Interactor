@@ -498,6 +498,7 @@ function getFilterPanel() {
 		.text('Close')
 		.click(function(e){
 			$('div.filterPanel-container').hide();
+			$('#container').removeClass('blur');
 		})
 	)
 	.append(
@@ -603,10 +604,26 @@ function getGenInfo(rawData) {
 		.find('hr')
 		.remove()
 		.end();
+	var refreshDataLink =
+		$('<a>')
+		.attr({
+			'href' : '#',
+			'id' : 'refreshLink'
+		})
+		.addClass('no-print')
+		.text('Refresh interactive content')
+		.click(function(){
+			localStorage.clear();
+			location.reload();
+			return false;
+		})
 	var result =
 	$('<div>')
 	.addClass('filter-genInfo filter-all filter-shown genInfo-container')
 	.addClass('no-print')
+	.append(
+		refreshDataLink
+	)
 	.append(
 		rawData.find('h2')
 	)
@@ -855,20 +872,6 @@ function scheduleProcessor(data) {
 	var genInfoObject = getGenInfo(rawData);
 	//-- Extract "table data" object
 	var allTablesObject = getAllTables(rawData);
-	//-- Create a "refresh interactive content" link
-	var refreshDataLink =
-		$('<a>')
-		.attr({
-			'href' : '#',
-			'id' : 'refreshLink'
-		})
-		.addClass('no-print')
-		.text('Refresh interactive content')
-		.click(function(){
-			localStorage.clear();
-			location.reload();
-			return false;
-		})
 	//-- Create "LetterBar"
 	var letterBar = getLetterBar();
 	//-- Create "Filter Panel"
@@ -886,6 +889,7 @@ function scheduleProcessor(data) {
 				'top' : isMobile() ? 0 : $('#filterButton').outerHeight() + 10
 			})
 			.toggle();
+			$("#container").toggleClass('blur');
 		})
 	//-- Initialize maps for instructor names and locations
 	var nameMap = {};
@@ -1114,7 +1118,7 @@ function scheduleProcessor(data) {
 	filterPanel.data('nameMap',nameMap);
 	//-- Attach objects to DOM
 	$('<div>')
-	.append(refreshDataLink)
+	.attr('id','container')
 	.append(filterButton)
 	.append(filterPanel)
 	.append(letterBar)
@@ -1186,6 +1190,7 @@ $(document).keydown(function(e){
 	if(filterPanel.filter(':hidden').length === 0) {
 		if(code === 27) {
 			filterPanel.hide();
+			$("#container").removeClass('blur');
 		}
 		else if(code === 13) {
 			$('#filterPanel-apply').trigger('click');

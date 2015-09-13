@@ -43,7 +43,7 @@ if(isset($_GET['ver']) and $_GET['ver'] !== '') {
 	</script>
 	<?php
 	if($detect->isMobile() and !($detect->isTablet())) {
-		echo '<meta name="viewport" content="width=620, maximum-scale=1">';
+		echo '<meta name="viewport" content="width=768, maximum-scale=1">';
 	}
 	?>
 	<link rel="stylesheet" type="text/css" href="css/interactor.css" />
