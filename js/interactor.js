@@ -436,19 +436,20 @@ function getFilterPanel() {
 		var input = $(this).find('input');
 		input
 		.attr('data-type','dow-any')
-		.prop('disabled', false)
-		.prop('checked', true);
 		$(this).click(function(){
 			input[0].checked = !(input[0].checked);
-			$('div.filterPanel-container input[data-type="dow-day"]').prop('disabled',input[0].checked);
-		});
+			$('div.filterPanel-container input[data-type="dow-day"]')
+			.prop('disabled',input[0].checked)
+			.css('cursor',input[0].checked ? 'not-allowed' : 'default');
+		})
+
 	})
 	.end()
 	.find('div.filterPanel-dowItem:not(div.dow-Any):not(div.dow-Not)').each(function(){
 		var input = $(this).find('input');
 		input
 		.attr('data-type','dow-day')
-		.prop('disabled',true);
+		//.prop('disabled',true);
 		$(this).click(function(){
 			if(!$('div.filterPanel-container input[data-type="dow-any"]').prop('checked')) {
 				input[0].checked = !(input[0].checked);
@@ -461,11 +462,11 @@ function getFilterPanel() {
 		var input = $(this).find('input');
 		input
 		.attr('data-type','level-any')
-		.prop('disabled', false)
-		.prop('checked', true);
 		$(this).click(function(){
 			input[0].checked = !(input[0].checked);
-			$('div.filterPanel-container input[data-type="level-pattern"]').prop('disabled',input[0].checked);
+			$('div.filterPanel-container input[data-type="level-pattern"]')
+			.prop('disabled',input[0].checked)
+			.css('cursor',input[0].checked ? 'not-allowed' : 'default');
 		});
 	})
 	.end()
@@ -473,7 +474,6 @@ function getFilterPanel() {
 		var input = $(this).find('input');
 		input
 		.attr('data-type','level-pattern')
-		.prop('disabled',true);
 		$(this).click(function(){
 			if(!$('div.filterPanel-container input[data-type="level-any"]').prop('checked')) {
 				input[0].checked = !(input[0].checked);
@@ -518,6 +518,7 @@ function getFilterPanel() {
 	})
 	.end()
 	.hide();
+
 	return filterContent;
 }
 //-----------------------------
@@ -1125,6 +1126,8 @@ function scheduleProcessor(data) {
 	.append(genInfoObject)
 	.append(allTablesObject)
 	.insertAfter('#topOfThePage');
+	//-- Reset setting in filter panel
+	filterResetHandler();
 	//-- Scroll to URL anchor (if defined)
 	if(window.location.hash !== "") {
 		var urlTarget = window.location.hash.split('#')[1];
