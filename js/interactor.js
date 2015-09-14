@@ -436,19 +436,20 @@ function getFilterPanel() {
 		var input = $(this).find('input');
 		input
 		.attr('data-type','dow-any')
-		.prop('disabled', false)
-		.prop('checked', true);
 		$(this).click(function(){
 			input[0].checked = !(input[0].checked);
-			$('div.filterPanel-container input[data-type="dow-day"]').prop('disabled',input[0].checked);
-		});
+			$('div.filterPanel-container input[data-type="dow-day"]')
+			.prop('disabled',input[0].checked)
+			.css('cursor',input[0].checked ? 'not-allowed' : 'default');
+		})
+
 	})
 	.end()
 	.find('div.filterPanel-dowItem:not(div.dow-Any):not(div.dow-Not)').each(function(){
 		var input = $(this).find('input');
 		input
 		.attr('data-type','dow-day')
-		.prop('disabled',true);
+		//.prop('disabled',true);
 		$(this).click(function(){
 			if(!$('div.filterPanel-container input[data-type="dow-any"]').prop('checked')) {
 				input[0].checked = !(input[0].checked);
@@ -461,11 +462,11 @@ function getFilterPanel() {
 		var input = $(this).find('input');
 		input
 		.attr('data-type','level-any')
-		.prop('disabled', false)
-		.prop('checked', true);
 		$(this).click(function(){
 			input[0].checked = !(input[0].checked);
-			$('div.filterPanel-container input[data-type="level-pattern"]').prop('disabled',input[0].checked);
+			$('div.filterPanel-container input[data-type="level-pattern"]')
+			.prop('disabled',input[0].checked)
+			.css('cursor',input[0].checked ? 'not-allowed' : 'default');
 		});
 	})
 	.end()
@@ -473,7 +474,6 @@ function getFilterPanel() {
 		var input = $(this).find('input');
 		input
 		.attr('data-type','level-pattern')
-		.prop('disabled',true);
 		$(this).click(function(){
 			if(!$('div.filterPanel-container input[data-type="level-any"]').prop('checked')) {
 				input[0].checked = !(input[0].checked);
@@ -498,6 +498,7 @@ function getFilterPanel() {
 		.text('Close')
 		.click(function(e){
 			$('div.filterPanel-container').hide();
+			$('#container').removeClass('blur');
 		})
 	)
 	.append(
@@ -517,6 +518,7 @@ function getFilterPanel() {
 	})
 	.end()
 	.hide();
+
 	return filterContent;
 }
 //-----------------------------
@@ -603,10 +605,26 @@ function getGenInfo(rawData) {
 		.find('hr')
 		.remove()
 		.end();
+	var refreshDataLink =
+		$('<a>')
+		.attr({
+			'href' : '#',
+			'id' : 'refreshLink'
+		})
+		.addClass('no-print')
+		.text('Refresh interactive content')
+		.click(function(){
+			localStorage.clear();
+			location.reload();
+			return false;
+		})
 	var result =
 	$('<div>')
 	.addClass('filter-genInfo filter-all filter-shown genInfo-container')
 	.addClass('no-print')
+	.append(
+		refreshDataLink
+	)
 	.append(
 		rawData.find('h2')
 	)
@@ -855,20 +873,6 @@ function scheduleProcessor(data) {
 	var genInfoObject = getGenInfo(rawData);
 	//-- Extract "table data" object
 	var allTablesObject = getAllTables(rawData);
-	//-- Create a "refresh interactive content" link
-	var refreshDataLink =
-		$('<a>')
-		.attr({
-			'href' : '#',
-			'id' : 'refreshLink'
-		})
-		.addClass('no-print')
-		.text('Refresh interactive content')
-		.click(function(){
-			localStorage.clear();
-			location.reload();
-			return false;
-		})
 	//-- Create "LetterBar"
 	var letterBar = getLetterBar();
 	//-- Create "Filter Panel"
@@ -886,6 +890,7 @@ function scheduleProcessor(data) {
 				'top' : isMobile() ? 0 : $('#filterButton').outerHeight() + 10
 			})
 			.toggle();
+			$("#container").toggleClass('blur');
 		})
 	//-- Initialize maps for instructor names and locations
 	var nameMap = {};
@@ -1114,13 +1119,15 @@ function scheduleProcessor(data) {
 	filterPanel.data('nameMap',nameMap);
 	//-- Attach objects to DOM
 	$('<div>')
-	.append(refreshDataLink)
+	.attr('id','container')
 	.append(filterButton)
 	.append(filterPanel)
 	.append(letterBar)
 	.append(genInfoObject)
 	.append(allTablesObject)
 	.insertAfter('#topOfThePage');
+	//-- Reset setting in filter panel
+	filterResetHandler();
 	//-- Scroll to URL anchor (if defined)
 	if(window.location.hash !== "") {
 		var urlTarget = window.location.hash.split('#')[1];
@@ -1186,6 +1193,7 @@ $(document).keydown(function(e){
 	if(filterPanel.filter(':hidden').length === 0) {
 		if(code === 27) {
 			filterPanel.hide();
+			$("#container").removeClass('blur');
 		}
 		else if(code === 13) {
 			$('#filterPanel-apply').trigger('click');

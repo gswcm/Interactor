@@ -1,3 +1,10 @@
+/* -- Blurizator -- */
+	#container.blur .filter-allTables,
+	#container.blur .filter-genInfo,
+	#container.blur .navigation-letters {
+		filter: blur(3px) grayscale(75%);
+		-webkit-filter: blur(3px) grayscale(75%);
+	}
 /* -- 'Refresh Interactive Content' link -- */
 	#refreshLink {
 		font-family : arial;
