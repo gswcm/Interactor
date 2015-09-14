@@ -133,6 +133,8 @@ function filterApplyHandler() {
 	}
 	//-- Trigger windows resize event to re-place naviation letterbar
 	$(window).trigger('resize');
+	//-- Close dialog
+	$('#filterPanel-close').trigger('click');
 }
 
 //---------------------------------------
