@@ -1,15 +1,22 @@
+/* -- Body defaults -- */
+	body {
+		font-family : arial;
+	}
+	#container, div.tooltip-container {
+		font-size : small;
+	}
+
 /* -- Blurizator -- */
 	#container.blur .filter-allTables,
 	#container.blur .filter-genInfo,
-	#container.blur .navigation-letters {
+	#container.blur .navigation-letters,
+	.tooltip-container.blur {
 		filter: blur(3px) grayscale(75%);
 		-webkit-filter: blur(3px) grayscale(75%);
 	}
 /* -- 'Refresh Interactive Content' link -- */
 	#refreshLink {
-		font-family : arial;
 		float : right;
-		//display : block;
 		position : relative;
 		top : 0px;
 		margin : 0px;
@@ -18,12 +25,13 @@
 	td.td-tooltip a {
 		cursor : help;
 	}
+/* -- Tooltip window -- */
+	div.tooltip-container {
+		z-index : 20;
+	}
 /* -- Name tooltip -- */
 	.name-tooltip {
 		background : white;
-		z-index : 1050;
-		font-family : arial;
-		font-size : small;
 		padding : 10px;
 		border: 1px solid rgba(0, 0, 0, 0.2);
 		border-radius: 6px;
@@ -32,16 +40,12 @@
 	}
 /* -- Location tooltip -- */
 	.modal-dialog {
-		//position: relative;
 		width: 400px;
-		z-index: 1050;
 		margin: 0px;
 	}
 	.modal-content {
 		background-color: #ffffff;
 		border: 1px solid rgba(0, 0, 0, 0.2);
-		font-family : arial;
-		font-size : small;
 		border-radius: 6px;
 		outline: none;
 		box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
@@ -66,8 +70,6 @@
 		margin-top : auto;
 		margin-bottom: auto;
 		margin-left: 20px;
-		font-family : arial;
-		font-size : smaller;
 	}
 	div.genInfo-title {
 		margin: 10px auto;
@@ -76,7 +78,6 @@
 		padding : 5px;
 		margin : 5px;
 		font-weight : bold;
-		font-size : large;
 	}
 	p.genInfo-fee,
 	p.genInfo-ptrm-title {
@@ -111,19 +112,16 @@
 		display : inline-block;
 		background : rgba(250, 255, 250, 1.0);
 		max-width : 550px;
-		font-size : 80%;
-		z-index : 100;
+		z-index : 20;
 		outline : 0;
 		box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
 	}
 	div.filterPanel-container fieldset p {
 		color : rgb(0, 0, 153);
 		margin : 0px;
-		font-family : arial;
 	}
 	div.filterPanel-container fieldset legend,
 	div.filterPanel-container fieldset label {
-		font-family : arial;
 	}
 	div.filterPanel-container fieldset p ul {
 		margin : 5px;
@@ -161,11 +159,6 @@
 	}
 	div.filterPanel-container fieldset.filterPanel-dow {
 	}
-	div.filterPanel-container button {
-		float : right;
-		margin-top: 7px;
-		margin-left : 10px;
-	}
 	div.filterPanel-container input[type='text'] {
 		float : left;
 		width : 280px;
@@ -174,31 +167,32 @@
 		margin-left: 3px;
 		border : 1px solid black;
 		border-radius : 5px;
-	}
-	div.filterPanel-container input[type='text']:focus {
-		border : 1px solid blue;
 		outline: 0;
 	}
+	/*
+	div.filterPanel-container input[type='text']:focus {
+		border : 1px solid blue;
+	}
+	*/
 	div.filterPanel-container button	{
+		float : right;
 		border-radius : 5px;
 		border : 1px solid black;
 		background : rgba(242, 255, 242, 1.0);
 		padding : 5px 10px;
 		color : rgb(0, 0, 153);
 		font-weight: bold;
-		font-family: arial;
 		cursor: pointer;
+		margin-top: 7px;
+		margin-left : 10px;
 		margin-right : 3px;
-		z-index : 150;
 		outline : 0;
 	}
 	div.filterPanel-container button:hover	{
 		color : black;
-		//outline : 0;
 	}
 	div.filterPanel-container button:active	{
 		color : red;
-		//outline : 0;
 	}
 /* --- Filter button --- */
 	#filterButton	{
@@ -210,7 +204,7 @@
 		padding : 5px 15px;
 		color : rgb(0, 0, 153);
 		font-weight: bold;
-		font-family: arial;
+		font-size : medium;
 		cursor: pointer;
 		z-index : 10;
 		top : 0px !important;
@@ -232,8 +226,7 @@
 		background : rgba(242, 255, 242, 1.0);
 	}
 	div.navigation-letters table {
-		font-family : arial;
-		font-size : 100%;
+		font-size : medium;
 	}
 	div.navigation-letters table a {
 		margin : 5px 0px;
@@ -241,13 +234,11 @@
 	}
 /* --- All class offering tables --- */
 	div.filter-allTables {
-		font-family : arial;
 	}
 	div.filter-allTables table {
 		margin-top : 20px;
 		margin-left : 20px;
 		width : calc(100% - 20px);
-		font-size : smaller;
 		border-spacing : 0;
 		border-collapse : collapse;
 	}
@@ -285,10 +276,10 @@
 		width : 4%;
 	}
 	div.filter-allTables table th.col-subj {
-		width : 5%;
+		width : 4%;
 	}
 	div.filter-allTables table th.col-numb {
-		width : 5%;
+		width : 4%;
 	}
 	div.filter-allTables table th.col-title {
 		width : auto;
@@ -318,7 +309,7 @@
 		width : 10%;
 	}
 	div.filter-allTables table th.col-offering {
-		width : 9%;
+		width : 12%;
 	}
 	@media only screen and (max-width : 850px) {
 		div.filter-allTables table th.filter-antimobile,
@@ -327,8 +318,8 @@
 		}
 	}
 	@media only screen and (min-width : 1600px) {
-		body {
-			font-size : large;
+		#container, div.tooltip-container {
+			font-size : medium;
 		}
 		div.filterPanel-container {
 			padding : 20px;
@@ -339,23 +330,42 @@
 		div.filterPanel-container fieldset.filterPanel-level {
 			margin-bottom : 10px;
 		}
+		div.filter-allTables table tr td,
+		div.filter-allTables table tr th {
+			padding : 8px;
+		}
+		.modal-dialog {
+			width: 800px;
+		}
 		.modal-body {
-			padding: 10px;
+			padding: 20px;
+		}
+		.modal-body img {
+			padding-bottom : 20px !important;
+		}
+		.name-tooltip {
+			padding: 20px;
 		}
 		div.filterPanel-container input[type='text'] {
-			width : 520px;
+			width : 500px;
 			margin-top: 10px;
+			padding: 8px;
+			font-size : medium;
 		}
 		div.filterPanel-container button {
 			margin-top : 10px;
+			font-size : normal;
+			padding: 8px;
 		}
 	}
 	@media print {
 		@page {
 			size: landscape;
 		}
-		table * {
+		#container {
 			font-size : x-small;
+		}
+		table * {
 			color : black;
 			text-decoration : none;
 		}

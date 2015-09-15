@@ -719,6 +719,9 @@ function updateLocationInfo(locMap, mapHTML, foundLocal) {
 		$('<a>')
 		.attr('href','')
 		.click(function(){
+			if($('#container').hasClass('blur')) {
+				return false;
+			}
 			var clickElement = $(this);
 			//-- Create tooltip container if does not exist
 			if($('div.tooltip-container').length === 0) {
@@ -805,6 +808,9 @@ function updateInstructorInfo(nameMap, text, foundLocal) {
 		var a = $('<a>')
 			.attr('href','')
 			.click(function(){
+				if($('#container').hasClass('blur')) {
+					return false;
+				}
 				var clickElement = $(this);
 				//-- Create tooltip container if does not exist
 				if($('div.tooltip-container').length === 0) {
@@ -892,7 +898,8 @@ function scheduleProcessor(data) {
 				'top' : isMobile() ? 0 : $('#filterButton').outerHeight() + 10
 			})
 			.toggle();
-			$("#container").toggleClass('blur');
+			$('#container').toggleClass('blur');
+			$('div.tooltip-container').remove();
 		})
 	//-- Initialize maps for instructor names and locations
 	var nameMap = {};
