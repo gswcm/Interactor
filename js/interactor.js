@@ -2,7 +2,12 @@
 // Window scroll event handler
 //-----------------------------
 $.fn.scrollEnd = function(callback, timeout) {
-	$(this).scroll(function(){
+	$(this).scroll(function(ev){
+		if($('#container').hasClass('blur')) {
+			//-- Prevent scrolling of blurred content when Filter dialog is shown
+			$(window).scrollTop($(window).data('lastScrollTop'));
+			return false;
+		}
 		var $this = $(this);
 		if ($this.data('scrollTimeout')) {
 			clearTimeout($this.data('scrollTimeout'));
@@ -542,6 +547,7 @@ function getLetterBar() {
 		.find('table')
 		.append(
 			$('<tr>')
+			.attr('data-val', alphabet[letter])
 			.append(
 				$('<td align="center">')
 				.append(
@@ -949,8 +955,8 @@ function scheduleProcessor(data) {
 			.before(
 				$('<a>')
 				.attr({
-					'href':'',
-					'name':tableLetter
+					'href' : '',
+					'name' : tableLetter
 				})
 			);
 			letterBar.find('table tr').each(function(){
@@ -976,6 +982,7 @@ function scheduleProcessor(data) {
 				var CRN =  thisRowCells[tdIndexCRN].textContent.trim();
 				//-- Conditionally assign classes that will be used for filtering
 				thisRow.addClass('filter-all filter-shown');
+				thisRow.attr('table-letter', tableLetter);
 				//-- Day of the week
 				var dowClass = '';
 				if(days !== '') {
@@ -1158,8 +1165,9 @@ function scheduleProcessor(data) {
 	}
 	$(window).scrollEnd(function(){
 		var winTop = $(window).scrollTop();
+		$(window).data('lastScrollTop',winTop);
 		var scrollDomain = $('.filter-shown:not(.filter-genInfo)');
-		if(scrollDomain.first().length > 0 && (scrollDomain.first().offset().top - winTop > 20)) {
+		if(scrollDomain.first().length > 0 && (scrollDomain.first().offset().top - winTop > 100)) {
 			$(window).data('topRow',null);
 			return;
 		}
@@ -1168,7 +1176,7 @@ function scheduleProcessor(data) {
 			var distToThis = $(this).offset().top - winTop; //-- positive value if $(this) is fully visible on window
 			var distToPrev = ($prev === null) ? -100 : $prev.offset().top - winTop;
 			if(distToThis > 0 && distToPrev < 0) {
-				$(window).data('topRow', (Math.abs(distToThis) < Math.abs(distToPrev)) ? $(this) : $prev);
+				$(window).data('topRow', (Math.abs(distToThis) < Math.abs(distToPrev) || $(this).attr('table-letter') !== $prev.attr('table-letter')) ? $(this) : $prev);
 				return false;
 			}
 			$prev = $(this);
@@ -1208,6 +1216,112 @@ $(document).keydown(function(e){
 			$('#filterPanel-apply').trigger('click');
 		}
 	}
+	else {
+		//-- Scroll table by letter-hit
+		var letter = String.fromCharCode(code).toUpperCase();
+		if(letter.match(/[A-Z]/i) && letter.charCodeAt(0) === code) {
+			var anchor = $('a[name="' + letter + '"]');
+			if(anchor.length) {
+				$(window).data('topRow',anchor.next('table').find('tr.filter-shown:eq(0)'));
+				smoothScrollTo(anchor.next('table').offset().top);
+			}
+		}
+		else {
+			/*
+			var anchor = $(window).data('topRow') === null ? $('a[name="' + firstVisibleLetter + '"]') : $(window).data('topRow').parent().prev('a');
+			var row = $(window).data('topRow') === null ? anchor.next('table').find('tr.filter-shown:eq(0)') : $(window).data('topRow');
+			var table = row.parent();
+			*/
+			switch (code) {
+				case 36:
+					//-- Home
+					$(window).data('topRow',null);
+					smoothScrollTo(0);
+					break;
+				case 35:
+					//-- End
+					break;
+				case 34:
+				case 39:
+					//-- PgDn or Right
+					var target = null;
+					if($(window).data('topRow') === null) {
+						target = $('a[name="' + $('.navigation-letters table tr:visible:eq(1) td').text().trim() + '"]');
+					}
+					else {
+						var thisLetter = $(window).data('topRow').attr('table-letter');
+						var nextLetter = $('.navigation-letters table tr[data-val="' + thisLetter + '"]').nextAll('tr:visible:eq(0)').attr('data-val')
+						target = $('a[name="' + nextLetter + '"]');
+					}
+					if(target) {
+						$(window).data('topRow',target.next('table').find('tr.filter-shown:eq(0)'));
+						smoothScrollTo(target.next('table').offset().top);
+					}
+					break;
+				case 33:
+				case 37:
+					//-- PgUp or Left
+					if($(window).data('topRow') !== null) {
+						var thisLetter = $(window).data('topRow').attr('table-letter');
+						var prevLetter = $('.navigation-letters table tr[data-val="' + thisLetter + '"]').prevAll('tr:visible:eq(0)').attr('data-val')
+						if(prevLetter !== undefined) {
+							var target = $('a[name="' + prevLetter + '"]');
+							$(window).data('topRow', prevLetter === '#' ? null : target.next('table').find('tr.filter-shown:eq(0)'));
+							smoothScrollTo(prevLetter === '#' ? 0 : target.next('table').offset().top);
+						}
+					}
+					break;
+				case 40:
+					//-- Down
+					var target = null;
+					if($(window).data('topRow') === null) {
+						target = $('a[name="' + $('.navigation-letters table tr:visible:eq(1) td').text().trim() + '"]').next('table').find('tr.filter-shown:eq(0)');
+					}
+					else {
+						var nextRow = $(window).data('topRow').nextAll('tr.filter-shown:eq(0)');
+						if(nextRow.length) {
+							target = nextRow;
+						}
+						else {
+							var thisLetter = $(window).data('topRow').attr('table-letter');
+							var nextLetter = $('.navigation-letters table tr[data-val="' + thisLetter + '"]').nextAll('tr:visible:eq(0)').attr('data-val')
+							target = $('a[name="' + nextLetter + '"]').next('table').find('tr.filter-shown:eq(0)');
+						}
+					}
+					if(target) {
+						$(window).data('topRow',target);
+						smoothScrollTo($(window).data('topRow').offset().top);
+					}
+					break;
+				case 38:
+					//-- Up
+					if($(window).data('topRow') !== null) {
+						var prevRow = $(window).data('topRow').prevAll('tr.filter-shown:eq(0)');
+						if(prevRow.length) {
+							$(window).data('topRow', prevRow);
+							smoothScrollTo($(window).data('topRow').offset().top);
+						}
+						else {
+							var thisLetter = $(window).data('topRow').attr('table-letter');
+							var prevLetter = $('.navigation-letters table tr[data-val="' + thisLetter + '"]').prevAll('tr:visible:eq(0)').attr('data-val')
+							if(prevLetter === '#') {
+								$(window).data('topRow',null);
+								smoothScrollTo(0);
+							}
+							else {
+								$(window).data('topRow', $('a[name="' + prevLetter + '"]').next('table').find('tr.filter-shown').last());
+								smoothScrollTo($(window).data('topRow').offset().top);
+							}
+						}
+					}
+					break;
+				default:
+					return true;
+					break;
+			}
+			return false;
+		}
+	}
 });
 $(window).load(function(){
 	//-- Version control
@@ -1221,8 +1335,10 @@ $(window).load(function(){
 	localStorage.setItem('sched.param(debug)', getDebug());
 	//-- Strore schedule term in localStorage
 	localStorage.setItem('sched.param(term)', getTerm().replace(/[^0-9]/g,''));
-	//-- Load data from RAIN schedule
+	//-- Define default scrolling parameters
 	$(window).data('topRow',null);
+	$(window).data('lastScrollTop',0);
+	//-- Load data from RAIN schedule
 	$.get('raintaker.php?schedterm=' + getTerm(), function(data){
 		scheduleProcessor(data);
 		$(window).trigger('resize');

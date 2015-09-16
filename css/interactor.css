@@ -11,8 +11,13 @@
 	#container.blur .filter-genInfo,
 	#container.blur .navigation-letters,
 	.tooltip-container.blur {
+		/*
 		filter: blur(3px) grayscale(75%);
 		-webkit-filter: blur(3px) grayscale(75%);
+		*/
+		filter: url('svg/filters.svg#gblur') url('svg/filters.svg#grayscale');
+		-ms-filter: url('svg/filters.svg#gblur') url('svg/filters.svg#grayscale');
+		-webkit-filter: url('svg/filters.svg#gblur') url('svg/filters.svg#grayscale');
 	}
 /* -- 'Refresh Interactive Content' link -- */
 	#refreshLink {
@@ -107,7 +112,7 @@
 	div.filterPanel-container {
 		border: 1px solid rgba(0, 0, 0, 0.2);
 		border-radius: 6px;
-		padding : 7px;
+		padding : 10px;
 		position : fixed;
 		display : inline-block;
 		background : rgba(250, 255, 250, 1.0);
@@ -335,7 +340,7 @@
 			padding : 8px;
 		}
 		.modal-dialog {
-			width: 800px;
+			width: 700px;
 		}
 		.modal-body {
 			padding: 20px;
