@@ -1223,7 +1223,7 @@ $(document).keydown(function(e){
 			var anchor = $('a[name="' + letter + '"]');
 			if(anchor.length) {
 				$(window).data('topRow',anchor.next('table').find('tr.filter-shown:eq(0)'));
-				smoothScrollTo(anchor.offset().top);
+				smoothScrollTo(anchor.next('table').offset().top);
 			}
 		}
 		else {
@@ -1255,7 +1255,7 @@ $(document).keydown(function(e){
 					}
 					if(target) {
 						$(window).data('topRow',target.next('table').find('tr.filter-shown:eq(0)'));
-						smoothScrollTo(target.offset().top);
+						smoothScrollTo(target.next('table').offset().top);
 					}
 					break;
 				case 33:
@@ -1267,17 +1267,59 @@ $(document).keydown(function(e){
 						if(prevLetter !== undefined) {
 							var target = $('a[name="' + prevLetter + '"]');
 							$(window).data('topRow', prevLetter === '#' ? null : target.next('table').find('tr.filter-shown:eq(0)'));
-							smoothScrollTo(prevLetter === '#' ? 0 : target.offset().top);
+							smoothScrollTo(prevLetter === '#' ? 0 : target.next('table').offset().top);
 						}
 					}
 					break;
 				case 40:
 					//-- Down
+					var target = null;
+					if($(window).data('topRow') === null) {
+						target = $('a[name="' + $('.navigation-letters table tr:visible:eq(1) td').text().trim() + '"]').next('table').find('tr.filter-shown:eq(0)');
+					}
+					else {
+						var nextRow = $(window).data('topRow').nextAll('tr.filter-shown:eq(0)');
+						if(nextRow.length) {
+							target = nextRow;
+						}
+						else {
+							var thisLetter = $(window).data('topRow').attr('table-letter');
+							var nextLetter = $('.navigation-letters table tr[data-val="' + thisLetter + '"]').nextAll('tr:visible:eq(0)').attr('data-val')
+							target = $('a[name="' + nextLetter + '"]').next('table').find('tr.filter-shown:eq(0)');
+						}
+					}
+					if(target) {
+						$(window).data('topRow',target);
+						smoothScrollTo($(window).data('topRow').offset().top);
+					}
 					break;
 				case 38:
 					//-- Up
+					if($(window).data('topRow') !== null) {
+						var prevRow = $(window).data('topRow').prevAll('tr.filter-shown:eq(0)');
+						if(prevRow.length) {
+							$(window).data('topRow', prevRow);
+							smoothScrollTo($(window).data('topRow').offset().top);
+						}
+						else {
+							var thisLetter = $(window).data('topRow').attr('table-letter');
+							var prevLetter = $('.navigation-letters table tr[data-val="' + thisLetter + '"]').prevAll('tr:visible:eq(0)').attr('data-val')
+							if(prevLetter === '#') {
+								$(window).data('topRow',null);
+								smoothScrollTo(0);
+							}
+							else {
+								$(window).data('topRow', $('a[name="' + prevLetter + '"]').next('table').find('tr.filter-shown').last());
+								smoothScrollTo($(window).data('topRow').offset().top);
+							}
+						}
+					}
+					break;
+				default:
+					return true;
 					break;
 			}
+			return false;
 		}
 	}
 });
