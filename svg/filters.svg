@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+<title>A basic filter example</title>
+	<defs>
+		<filter id="gblur" filterRes="25">
+			<feGaussianBlur stdDeviation="5 1"/>
+		</filter>
+		 <filter id="grayscale">
+			<feColorMatrix type="saturate" values="0.25"/>
+		</filter>
+	</defs>
+<rect x="175" y="50" width="100" height="100" fill="blue" stroke="red" filter="url(#gblur)"/>
+</svg>
