@@ -297,10 +297,7 @@ function namePostProc(name, nameMap) {
 // Smooth scrolling to 'position'
 //--------------------------------
 function smoothScrollTo(position) {
-	$(document.body).animate({
-		scrollTop: position,
-		duration: 10
-	});
+	$('body,html').animate({scrollTop : position});
 }
 //--------------
 // Filter panel
@@ -1227,12 +1224,13 @@ $(document).keydown(function(e){
 			}
 		}
 		else {
-			/*
-			var anchor = $(window).data('topRow') === null ? $('a[name="' + firstVisibleLetter + '"]') : $(window).data('topRow').parent().prev('a');
-			var row = $(window).data('topRow') === null ? anchor.next('table').find('tr.filter-shown:eq(0)') : $(window).data('topRow');
-			var table = row.parent();
-			*/
 			switch (code) {
+				case 13:
+					//-- Enter
+					if($(window).data('topRow') !== null) {
+						$(window).data('topRow').find('td a').first().trigger('click');
+					}
+					break;
 				case 36:
 					//-- Home
 					$(window).data('topRow',null);
@@ -1273,24 +1271,23 @@ $(document).keydown(function(e){
 					break;
 				case 40:
 					//-- Down
-					var target = null;
 					if($(window).data('topRow') === null) {
-						target = $('a[name="' + $('.navigation-letters table tr:visible:eq(1) td').text().trim() + '"]').next('table').find('tr.filter-shown:eq(0)');
+						$(window).data('topRow', $('a[name="' + $('.navigation-letters table tr:visible:eq(1) td').text().trim() + '"]').next('table').find('tr.filter-shown:eq(0)'));
+						smoothScrollTo($(window).data('topRow').offset().top);
 					}
 					else {
 						var nextRow = $(window).data('topRow').nextAll('tr.filter-shown:eq(0)');
 						if(nextRow.length) {
-							target = nextRow;
+							$(window)
+							.data('topRow',nextRow)
+							.scrollTop($(window).data('topRow').offset().top);
 						}
 						else {
 							var thisLetter = $(window).data('topRow').attr('table-letter');
 							var nextLetter = $('.navigation-letters table tr[data-val="' + thisLetter + '"]').nextAll('tr:visible:eq(0)').attr('data-val')
-							target = $('a[name="' + nextLetter + '"]').next('table').find('tr.filter-shown:eq(0)');
+							$(window).data('topRow',$('a[name="' + nextLetter + '"]').next('table').find('tr.filter-shown:eq(0)'));
+							smoothScrollTo($(window).data('topRow').offset().top);
 						}
-					}
-					if(target) {
-						$(window).data('topRow',target);
-						smoothScrollTo($(window).data('topRow').offset().top);
 					}
 					break;
 				case 38:
@@ -1298,8 +1295,9 @@ $(document).keydown(function(e){
 					if($(window).data('topRow') !== null) {
 						var prevRow = $(window).data('topRow').prevAll('tr.filter-shown:eq(0)');
 						if(prevRow.length) {
-							$(window).data('topRow', prevRow);
-							smoothScrollTo($(window).data('topRow').offset().top);
+							$(window)
+							.data('topRow', prevRow)
+							.scrollTop($(window).data('topRow').offset().top);
 						}
 						else {
 							var thisLetter = $(window).data('topRow').attr('table-letter');

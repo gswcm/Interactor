@@ -15,8 +15,7 @@
 		filter: blur(3px) grayscale(75%);
 		-webkit-filter: blur(3px) grayscale(75%);
 		*/
-		filter: url('svg/filters.svg#gblur') url('svg/filters.svg#grayscale');
-		-ms-filter: url('svg/filters.svg#gblur') url('svg/filters.svg#grayscale');
+		filter: url('../svg/filters.svg#gblur') url('../svg/filters.svg#grayscale');
 		-webkit-filter: url('svg/filters.svg#gblur') url('svg/filters.svg#grayscale');
 	}
 /* -- 'Refresh Interactive Content' link -- */
