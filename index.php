@@ -57,5 +57,6 @@ if(isset($_GET['ver']) and $_GET['ver'] !== '') {
 </head>
 <body>
 	<a id='topOfThePage' href name='#'></a>
+	<div id='glass'></div>
 </body>
 </html>
