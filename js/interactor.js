@@ -3,11 +3,6 @@
 //-----------------------------
 $.fn.scrollEnd = function(callback, timeout) {
 	$(this).scroll(function(ev){
-		if($('#container').hasClass('blur')) {
-			//-- Prevent scrolling of blurred content when Filter dialog is shown
-			$(window).scrollTop($(window).data('lastScrollTop'));
-			return false;
-		}
 		var $this = $(this);
 		if ($this.data('scrollTimeout')) {
 			clearTimeout($this.data('scrollTimeout'));
@@ -503,6 +498,8 @@ function getFilterPanel() {
 		.click(function(e){
 			$('div.filterPanel-container').hide();
 			$('#container').removeClass('blur');
+			$('body').removeClass('no-scroll');
+			$('#glass').removeClass('dimmed');
 		})
 	)
 	.append(
@@ -722,9 +719,11 @@ function updateLocationInfo(locMap, mapHTML, foundLocal) {
 		$('<a>')
 		.attr('href','')
 		.click(function(){
+			/*
 			if($('#container').hasClass('blur')) {
 				return false;
 			}
+			*/
 			var clickElement = $(this);
 			//-- Create tooltip container if does not exist
 			if($('div.tooltip-container').length === 0) {
@@ -811,9 +810,11 @@ function updateInstructorInfo(nameMap, text, foundLocal) {
 		var a = $('<a>')
 			.attr('href','')
 			.click(function(){
+				/*
 				if($('#container').hasClass('blur')) {
 					return false;
 				}
+				*/
 				var clickElement = $(this);
 				//-- Create tooltip container if does not exist
 				if($('div.tooltip-container').length === 0) {
@@ -902,6 +903,8 @@ function scheduleProcessor(data) {
 			})
 			.toggle();
 			$('#container').toggleClass('blur');
+			$('body').toggleClass('no-scroll');
+			$('#glass').toggleClass('dimmed');
 			$('div.tooltip-container').remove();
 		})
 	//-- Initialize maps for instructor names and locations
@@ -1206,8 +1209,7 @@ $(document).keydown(function(e){
 	}
 	if(filterPanel.filter(':hidden').length === 0) {
 		if(code === 27) {
-			filterPanel.hide();
-			$("#container").removeClass('blur');
+			$('#filterPanel-close').trigger('click');
 		}
 		else if(code === 13) {
 			$('#filterPanel-apply').trigger('click');
@@ -1216,6 +1218,10 @@ $(document).keydown(function(e){
 	else {
 		//-- Scroll table by letter-hit
 		var letter = String.fromCharCode(code).toUpperCase();
+		if(e.altKey && letter === 'F') {
+			$('#filterButton').trigger('click');
+			return false;
+		}
 		if(letter.match(/[A-Z]/i) && letter.charCodeAt(0) === code) {
 			var anchor = $('a[name="' + letter + '"]');
 			if(anchor.length) {
