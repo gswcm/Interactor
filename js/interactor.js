@@ -197,7 +197,7 @@ function courseTitleClickHandler() {
 					}
 					else {
 						coursePrereqHTML = '<span>Restrictions may apply. More details can be found <a href="' +
-						'https://rain.gsw.edu/prod8x/bwckctlg.p_disp_course_detail?' +
+						'https://gsw.gabest.usg.edu/pls/B420/bwckctlg.p_disp_course_detail?' +
 						'cat_term_in=' + localStorage.getItem('sched.param(term)') +
 						'&subj_code_in=' + subj +
 						'&crse_numb_in=' + numb +
@@ -1192,7 +1192,7 @@ $(window).resize(function(){
 	$('#filterButton')
 	.css({
 		'top' : '0px',
-		'left':$(window).width()/2-$('#filterButton').width()/2,'top':'auto'
+		'left':$(window).width()/2-$('#filterButton').width()/2
 	});
 	$('div.filterPanel-container')
 	.css({
