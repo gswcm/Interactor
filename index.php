@@ -1,7 +1,7 @@
 <?php
 require_once './Mobile_Detect.php';
 $detect = new Mobile_Detect;
-$term = 'sched201508';
+$term = 'sched201602';
 if(isset($_GET['term']) and $_GET['term'] !== '') {
 	$term = $_GET['term'];
 }
@@ -9,7 +9,7 @@ $debug = '1';
 if(isset($_GET['debug']) and $_GET['debug'] !== '') {
 	$debug = $_GET['debug'];
 }
-$version = '1.0.45';
+$version = '1.1.00';
 if(isset($_GET['ver']) and $_GET['ver'] !== '') {
 	$version = $_GET['ver'];
 }
