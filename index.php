@@ -1,7 +1,7 @@
 <?php
 require_once './Mobile_Detect.php';
 $detect = new Mobile_Detect;
-$term = 'sched201602';
+$term = 'sched201608';
 if(isset($_GET['term']) and $_GET['term'] !== '') {
 	$term = $_GET['term'];
 }
